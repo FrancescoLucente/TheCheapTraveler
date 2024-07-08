@@ -1,10 +1,29 @@
 <p style="color: green"><%= notice %></p>
 
 <%= render @city %>
+<% if @city.photos.any? %>
+  
 
+<!-- Aggiunta della footer per le foto -->
+<footer>
+  <div class="footer-photos">
+    <% @city.photos.each do |photo| %>
+      <%= image_tag photo.image_url, alt: @city.name, class: "footer-city-image" %>
+    <% end %>
+  </div>
+</footer>
+
+<% else %>
+  <p>Immagine non disponibile</p>
+<% end %>
+
+<!-- Inizio del commento 
 <div>
   <%= link_to "Edit this city", edit_city_path(@city) %> |
   <%= link_to "Back to cities", cities_path %>
 
   <%= button_to "Destroy this city", @city, method: :delete %>
 </div>
+fine del commento -->
+
+

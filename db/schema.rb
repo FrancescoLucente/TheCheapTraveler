@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_07_162216) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_08_124121) do
   create_table "cities", force: :cascade do |t|
     t.string "name"
     t.string "country"
@@ -19,4 +19,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_07_162216) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "photos", force: :cascade do |t|
+    t.string "image_url"
+    t.integer "city_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["city_id"], name: "index_photos_on_city_id"
+  end
+
+  add_foreign_key "photos", "cities"
 end

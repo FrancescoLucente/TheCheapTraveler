@@ -22,3 +22,5 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+ruby 3.1.1
+Creare un file .env in cui inserire le access keys per le API

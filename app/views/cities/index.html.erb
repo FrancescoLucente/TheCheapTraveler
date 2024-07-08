@@ -1,14 +1,19 @@
+<!-- app/views/cities/index.html.erb -->
 <p style="color: green"><%= notice %></p>
 
 <h1>Cities</h1>
 
-<div id="cities">
+<div id="cities" class="city-grid">
   <% @cities.each do |city| %>
-    <%= render city %>
-    <p>
-      <%= link_to "Show this city", city %>
-    </p>
+    <div class="city-item">
+     <%= render city %> 
+     
+      <p>
+        <%= link_to "Mostra dettagli", city %>
+      </p>
+
+
+      
+    </div>
   <% end %>
 </div>
-
-<%= link_to "New city", new_city_path %>

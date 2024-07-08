@@ -1,15 +1,18 @@
+
+require 'httparty'
 class CitiesController < ApplicationController
   before_action :set_city, only: %i[ show edit update destroy ]
-
+  
   # GET /cities or /cities.json
   def index
-    @cities = City.all
-  end
+      @cities = City.all
+    end
 
-  # GET /cities/1 or /cities/1.json
   def show
-  end
-
+      @city = City.find(params[:id])
+      @city.fetch_images_from_unsplash
+      @photos = @city.photos
+    end
   # GET /cities/new
   def new
     @city = City.new

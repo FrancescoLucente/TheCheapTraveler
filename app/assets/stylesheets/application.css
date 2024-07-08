@@ -13,3 +13,34 @@
  *= require_tree .
  *= require_self
  */
+/* app/assets/stylesheets/application.css */
+
+/* Stile per la griglia delle città */
+.city-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Griglia adattabile con colonne minime di 200px */
+  gap: 20px; /* Spaziatura tra le città */
+}
+
+/* Stile per ogni singola città */
+.city-item {
+  text-align: center;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+/* Stile per le immagini delle città */
+.city-image {
+  max-width: 100%; /* Immagini al massimo della larghezza disponibile */
+  height: 100px; /* Altezza proporzionale alla larghezza per evitare distorsioni */
+}
+.footer-photos {
+  display: flex;
+  justify-content: center; /* Centra le immagini orizzontalmente */
+  align-items: center; /* Centra le immagini verticalmente */
+}
+
+.footer-photos img {
+  max-width: 100px; /* Imposta la larghezza massima delle immagini */
+  margin: 0 10px; /* Aggiunge margine tra le immagini */
+}
