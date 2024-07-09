@@ -10,13 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_08_124121) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_09_085254) do
   create_table "cities", force: :cascade do |t|
     t.string "name"
     t.string "country"
     t.string "code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "events", force: :cascade do |t|
+    t.string "name"
+    t.datetime "date"
+    t.integer "city_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "description"
+    t.datetime "event_date"
+    t.index ["city_id"], name: "index_events_on_city_id"
   end
 
   create_table "photos", force: :cascade do |t|
@@ -27,5 +38,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_08_124121) do
     t.index ["city_id"], name: "index_photos_on_city_id"
   end
 
+  add_foreign_key "events", "cities"
   add_foreign_key "photos", "cities"
 end
