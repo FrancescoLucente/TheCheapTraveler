@@ -1,10 +1,6 @@
 <p style="color: green"><%= notice %></p>
 
-<%= render @event %>
-
-<div>
-  <%= link_to "Edit this event", edit_event_path(@event) %> |
-  <%= link_to "Back to events", events_path %>
-
-  <%= button_to "Destroy this event", @event, method: :delete %>
-</div>
+<h1><%= @event.name %></h1>
+<p>Start Date: <%= @event.event_date.strftime("%B %d, %Y %H:%M") %></p>
+<p>Description: <%= @event.description %></p>
+<p>Link: <%= link_to @event.link, @event.link %></p>

@@ -1,13 +1,14 @@
 class EventsController < ApplicationController
   before_action :set_event, only: %i[ show edit update destroy ]
-
+  before_action :set_city
   # GET /events or /events.json
   def index
-    @events = Event.all
+    @events = @city.events
   end
 
   # GET /events/1 or /events/1.json
   def show
+      
   end
 
   # GET /events/new
@@ -67,4 +68,7 @@ class EventsController < ApplicationController
     def event_params
       params.require(:event).permit(:name, :date, :city_id)
     end
+    def set_city
+        @city = City.find(params[:city_id])
+      end
 end

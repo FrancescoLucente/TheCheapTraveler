@@ -1,15 +1,14 @@
 <p style="color: green"><%= notice %></p>
 
-<%= render @city %>
+<h1><%=@city.name + ", " + @city.country%> </h1>
 
 
 <div class="central-column">
-  <h2>Top 10 Events in <%= @city.name %></h2>
-  <% @city.events.order(date: :asc).limit(10).each do |event| %>
+  <h2><%=link_to "Events",city_events_path(@city) %></h2>
+  <% @city.events.order(event_date: :asc).limit(3).each do |event| %>
     <div class="event-item">
-      <h3><%= event.name %></h3>
-      <p><%= event.description %></p>
-      <p>Date: <%= event.event_date.strftime("%B %d, %Y") %></p>
+       <h3><%= link_to event.name, city_event_path(@city, event) %></h3>
+      <p>Date: <%= event.event_date.strftime("%B %d, %Y  %H:%M") %></p>
       <!-- Aggiungi altre informazioni sull'evento se necessario -->
     </div>
   <% end %>

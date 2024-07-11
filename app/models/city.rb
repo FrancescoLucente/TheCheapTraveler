@@ -45,12 +45,23 @@ class City < ApplicationRecord
         events_data.each do |event_data|
           name = event_data['name']
           description = event_data['description']
-          start_time = DateTime.parse(event_data['start_time']) # Gestisci eventuali dati mancanti
+          start_time = DateTime.parse(event_data['start_time'])
+          link=event_data['link']
+          if event_data['end_time'].present?
+              end_date = DateTime.parse(event_data['end_time'])
+          else
+            end_date = nil  # Oppure puoi gestire un valore di default o un altro comportamento qui
+          end
+         
+          entity_id=event_data['event_id']
           
           event = self.events.new(
-            name: name,
-            description: description,
-            event_date: start_time
+                                  entity_id:entity_id,
+                                  name: name,
+                                  description: description,
+                                  event_date: start_time,
+                                  end_date: end_date,
+                                  link:link
           )
           
           event.save  # Salva l'evento nel database

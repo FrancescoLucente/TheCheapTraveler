@@ -1,17 +1,13 @@
 <div id="<%= dom_id event %>">
-  <p>
-    <strong>Name:</strong>
-    <%= event.name %>
-  </p>
-
-  <p>
-    <strong>Date:</strong>
-    <%= event.date %>
-  </p>
-
-  <p>
-    <strong>City:</strong>
-    <%= event.city_id %>
-  </p>
+  <h3><%= link_to event.name, city_event_path(@city, event) %></h3>
+  <p>Date: <%= event.event_date.strftime("%B %d, %Y %H:%M") %></p>
+  
+  <% if event.end_date.present? %>
+    <p>End Date: <%= event.end_date.strftime("%B %d, %Y %H:%M") %></p>
+  <% else %>
+    <p>End Date: Non specificato</p>
+  <% end %>
+  
+  <p>Description: <%= event.description %></p>
 
 </div>
