@@ -11,7 +11,7 @@ class CitiesController < ApplicationController
   def show
       @city = City.find(params[:id])
       @city.fetch_images_from_unsplash
-      @city.fetch_events_from_rapidapi
+      #@city.fetch_events_from_rapidapi commentata perchè sennò finivamo le richieste disponibili gratis
       
     end
   # GET /cities/new

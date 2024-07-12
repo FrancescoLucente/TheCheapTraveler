@@ -45,6 +45,7 @@ class City < ApplicationRecord
         events_data.each do |event_data|
           name = event_data['name']
           description = event_data['description']
+          description=description.gsub(/[^a-zA-Z0-9\s.,&-]/, '')
           start_time = DateTime.parse(event_data['start_time'])
           link=event_data['link']
           if event_data['end_time'].present?

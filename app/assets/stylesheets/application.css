@@ -34,13 +34,17 @@
   max-width: 100%; /* Immagini al massimo della larghezza disponibile */
   height: 100px; /* Altezza proporzionale alla larghezza per evitare distorsioni */
 }
-.footer-photos {
-  display: flex;
-  justify-content: center; /* Centra le immagini orizzontalmente */
-  align-items: center; /* Centra le immagini verticalmente */
+.footer-photos .carousel-inner {
+  max-height: 700px; /* Altezza massima delle immagini */
 }
 
-.footer-photos img {
-  max-width: 100px; /* Imposta la larghezza massima delle immagini */
-  margin: 0 10px; /* Aggiunge margine tra le immagini */
+.footer-photos .carousel-item {
+  text-align: center; /* Centra le immagini nel carousel */
+}
+
+.footer-photos .carousel-item img {
+  height:700px; /* Altezza fissa per le immagini */
+  width: auto; /* Mantiene il rapporto di aspetto */
+  max-width: 80%; /* Larghezza massima delle immagini */
+  margin: 0 auto; /* Centra le immagini orizzontalmente */
 }
