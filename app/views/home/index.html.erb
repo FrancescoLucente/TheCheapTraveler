@@ -1,0 +1,113 @@
+#<h1>Home#index</h1>
+#<p>Find me in app/views/home/index.html.erb</p>
+
+<!-- app/views/pages/home.html.erb -->
+
+<h1>Cerca il tuo viaggio</h1>
+
+<form action="/search_trip" method="post">
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+
+  <div>
+    <label for="departure_city">Città di partenza:</label>
+    <input type="text" id="departure_city" name="departure_city" required onkeyup="suggestCities(this.value, 'departure_suggestions')">
+    <ul id="departure_suggestions" class="suggestions"></ul>
+  </div>
+
+  <div>
+    <label for="destination_city">Destinazione:</label>
+    <input type="text" id="destination_city" name="destination_city" required onkeyup="suggestCities(this.value, 'destination_suggestions')">
+    <ul id="destination_suggestions" class="suggestions"></ul>
+  </div>
+
+  <div>
+    <label for="departure_date">Data di partenza:</label>
+    <input type="text" id="departure_date" name="departure_date" required>
+  </div>
+
+  <div>
+    <label for="number_of_people">Numero di persone:</label>
+    <input type="number" id="number_of_people" name="number_of_people" min="1" required>
+  </div>
+
+  <div>
+    <input type="checkbox" id="round_trip" name="round_trip" value="yes" onclick="toggleReturnDate()">
+    <label for="round_trip">Viaggio andata e ritorno</label>
+  </div>
+
+  <div id="return_date_div" style="display:none;">
+    <label for="return_date">Data di ritorno:</label>
+    <input type="text" id="return_date" name="return_date">
+  </div>
+
+  <div>
+    <input type="submit" value="Cerca">
+  </div>
+</form>
+
+<h2>Cerca città</h2>
+
+<form action="/search_city" method="get">
+  <div>
+    <label for="city_name">Cerca la città per nome:</label>
+    <input type="text" id="city_name" name="city_name" required onkeyup="suggestCities(this.value, 'city_suggestions')">
+    <ul id="city_suggestions" class="suggestions"></ul>
+    <input type="submit" value="Cerca">
+  </div>
+</form>
+
+<script>
+  function toggleReturnDate() {
+    var roundTripCheckbox = document.getElementById('round_trip');
+    var returnDateDiv = document.getElementById('return_date_div');
+    if (roundTripCheckbox.checked) {
+      returnDateDiv.style.display = 'block';
+    } else {
+      returnDateDiv.style.display = 'none';
+    }
+  }
+
+  function suggestCities(query, suggestionListId) {
+    if (query.length === 0) {
+      document.getElementById(suggestionListId).innerHTML = "";
+      return;
+    }
+
+    fetch(`/suggest_cities?query=${query}`)
+      .then(response => response.json())
+      .then(data => {
+        const suggestionList = document.getElementById(suggestionListId);
+        suggestionList.innerHTML = "";
+
+        data.forEach(city => {
+          const suggestionItem = document.createElement('li');
+          suggestionItem.textContent = city;
+          suggestionItem.onclick = () => {
+            document.getElementById(suggestionListId.replace('_suggestions', '')).value = city;
+            suggestionList.innerHTML = "";
+          };
+          suggestionList.appendChild(suggestionItem);
+        });
+      });
+  }
+</script>
+
+<style>
+  .suggestions {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid;
+    max-width: 200px;
+    position: absolute;
+    background: white;
+  }
+  .suggestions li {
+    padding: 8px;
+    cursor: pointer;
+  }
+  .suggestions li:hover {
+    background-color:
+  }
+</style>
+
