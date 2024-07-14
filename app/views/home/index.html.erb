@@ -1,32 +1,38 @@
-#<h1>Home#index</h1>
-#<p>Find me in app/views/home/index.html.erb</p>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>The Cheap Traveler</title>
+  <%= javascript_pack_tag 'autocomplete' %>
+</head>
+</html>
 
 <!-- app/views/pages/home.html.erb -->
 
-<h1>Cerca il tuo viaggio</h1>
+<h1>Search your trip</h1>
 
 <form action="/search_trip" method="post">
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
   <div>
-    <label for="departure_city">Città di partenza:</label>
+    <label for="departure_city">Departure city:</label>
     <input type="text" id="departure_city" name="departure_city" required onkeyup="suggestCities(this.value, 'departure_suggestions')">
     <ul id="departure_suggestions" class="suggestions"></ul>
   </div>
 
   <div>
-    <label for="destination_city">Destinazione:</label>
+    <label for="destination_city">Destination city:</label>
     <input type="text" id="destination_city" name="destination_city" required onkeyup="suggestCities(this.value, 'destination_suggestions')">
     <ul id="destination_suggestions" class="suggestions"></ul>
   </div>
 
   <div>
-    <label for="departure_date">Data di partenza:</label>
+    <label for="departure_date">Departure date:</label>
     <input type="text" id="departure_date" name="departure_date" required>
   </div>
 
   <div>
-    <label for="number_of_people">Numero di persone:</label>
+    <label for="number_of_people">Number of people:</label>
     <input type="number" id="number_of_people" name="number_of_people" min="1" required>
   </div>
 
@@ -36,7 +42,7 @@
   </div>
 
   <div id="return_date_div" style="display:none;">
-    <label for="return_date">Data di ritorno:</label>
+    <label for="return_date">Return date:</label>
     <input type="text" id="return_date" name="return_date">
   </div>
 
@@ -45,11 +51,11 @@
   </div>
 </form>
 
-<h2>Cerca città</h2>
+<h2>Search city</h2>
 
 <form action="/search_city" method="get">
   <div>
-    <label for="city_name">Cerca la città per nome:</label>
+    <label for="city_name">Search city by name:</label>
     <input type="text" id="city_name" name="city_name" required onkeyup="suggestCities(this.value, 'city_suggestions')">
     <ul id="city_suggestions" class="suggestions"></ul>
     <input type="submit" value="Cerca">

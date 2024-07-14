@@ -28,10 +28,10 @@ class HomeController < ApplicationController
   def suggest_cities
     # Logica per ottenere i suggerimenti delle città
     query = params[:query]
-    @cities = City.where("name LIKE ?", "%#{query}%").limit(5)
+    @cities = City.where("name LIKE ?", "#{query}%").limit(5)
 
     respond_to do |format|
-      format.json { render json: @cities.pluck(:name) }
+      format.json { render json: @cities.map(&:name) }
     end
   end
 end
