@@ -2,20 +2,21 @@
 require 'httparty'
 class CitiesController < ApplicationController
   before_action :set_city, only: %i[ show edit update destroy ]
-  
+
   # GET /cities or /cities.json
   def index
-      if params[:query].present?
-        @cities = City.where("name LIKE ?", "%#{params[:query]}%")
-      else
-        @cities = City.all
-      end
+    @query = params[:query]
+    if @query.present?
+      @cities = City.where("name LIKE ?", "%#{@query}%")
+    else
+      @cities = City.all
     end
+  end
   def show
       @city = City.find(params[:id])
       @city.fetch_images_from_unsplash
       #@city.fetch_events_from_rapidapi commentata perchè sennò finivamo le richieste disponibili gratis
-      
+
     end
   # GET /cities/new
   def new

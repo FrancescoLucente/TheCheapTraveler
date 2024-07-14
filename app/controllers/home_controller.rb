@@ -22,7 +22,8 @@ class HomeController < ApplicationController
     # Logica per elaborare la ricerca della città
     city_name = params[:city_name]
    # Rails.logger.debug "Redirecting to: #{cities_path(query: city_name)}"
-   redirect_to "/cities?query=#{URI.encode(city_name)}"
+   redirect_to cities_path(query: city_name)
+
   end
 
   def suggest_cities

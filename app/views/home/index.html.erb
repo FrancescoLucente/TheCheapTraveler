@@ -47,7 +47,7 @@
 
 <h2>Cerca città</h2>
 
-<form action="/search_city" method="get">
+<form action="<%= search_city_path %>" method="get">
   <div>
     <label for="city_name">Cerca la città per nome:</label>
     <input type="text" id="city_name" name="city_name" required onkeyup="suggestCities(this.value, 'city_suggestions')">
