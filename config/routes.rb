@@ -1,15 +1,19 @@
+# config/routes.rb
+
 Rails.application.routes.draw do
-  
   resources :cities do
-      resources :events, only: [:index, :show]
-      end
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+    resources :events, only: [:index, :show]
+  end
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  # Rotte personalizzate per il HomeController
+  post 'search_trip', to: 'home#search_trip'
+  get 'suggest_cities', to: 'home#suggest_cities'
+  
+  
 
-  # Defines the root path route ("/")
-  # root "posts#index"
-  root :to => redirect('/cities')
+  # Imposta la tua nuova pagina principale come root
+  root 'home#index'
+
+  # Definisci la rotta per la verifica dello stato di salute dell'applicazione
+  get 'up' => 'rails/health#show', as: :rails_health_check
 end

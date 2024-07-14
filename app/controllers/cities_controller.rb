@@ -5,9 +5,12 @@ class CitiesController < ApplicationController
   
   # GET /cities or /cities.json
   def index
-      @cities = City.all
+      if params[:query].present?
+        @cities = City.where("name LIKE ?", "%#{params[:query]}%")
+      else
+        @cities = City.all
+      end
     end
-
   def show
       @city = City.find(params[:id])
       @city.fetch_images_from_unsplash

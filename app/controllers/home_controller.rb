@@ -1,11 +1,8 @@
-#class HomeController < ApplicationController
-#  def index
-#  end
-#end
 
+require 'uri'
 class HomeController < ApplicationController
   def index
-    @cities=city.ApplicationController
+    @cities=City.all
   end
 
   def search_trip
@@ -24,9 +21,8 @@ class HomeController < ApplicationController
   def search_city
     # Logica per elaborare la ricerca della città
     city_name = params[:city_name]
-
-    # Esegui le azioni necessarie con questo dato
-    redirect_to root_path, notice: "City search submitted!"
+   # Rails.logger.debug "Redirecting to: #{cities_path(query: city_name)}"
+   redirect_to "/cities?query=#{URI.encode(city_name)}"
   end
 
   def suggest_cities
