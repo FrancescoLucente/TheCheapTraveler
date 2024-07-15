@@ -73,30 +73,28 @@
     }
   }
 
-  function suggestCities(query, suggestionListId) {
-    if (query.length === 0) {
-      document.getElementById(suggestionListId).innerHTML = "";
-      return;
-    }
+   function suggestCities(query, suggestionListId) {
+      if (query.length === 0) {
+        document.getElementById(suggestionListId).innerHTML = "";
+        return;
+      }
 
-    fetch(`/suggest_cities?query=${query}`)
-      .then(response => response.json())
-      .then(data => {
-        const suggestionList = document.getElementById(suggestionListId);
-        suggestionList.innerHTML = "";
+      fetch(`/suggest_cities?query=${query}`)
+        .then(response => response.json())
+        .then(data => {
+          const suggestionList = document.getElementById(suggestionListId);
+          suggestionList.innerHTML = "";
 
-        data.forEach(city => {
-          const suggestionItem = document.createElement('li');
-          suggestionItem.textContent = city;
-          suggestionItem.onclick = () => {
-            document.getElementById(suggestionListId.replace('_suggestions', '')).value = city;
-            suggestionList.innerHTML = "";
-            
-          };
-          suggestionList.appendChild(suggestionItem);
+          data.forEach(city => {
+            const suggestionItem = document.createElement('li');
+            suggestionItem.textContent = city.name;
+            suggestionItem.onclick = () => {
+              window.location.href = `/cities/${city.id}`;
+            };
+            suggestionList.appendChild(suggestionItem);
+          });
         });
-      });
-  }
+    }
 </script>
 
 <style>

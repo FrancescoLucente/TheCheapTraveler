@@ -32,7 +32,7 @@ class HomeController < ApplicationController
     @cities = City.where("name LIKE ?", "#{query}%").limit(5)
 
     respond_to do |format|
-      format.json { render json: @cities.map(&:name) }
+      format.json { render json: @cities.select(:id, :name) }
     end
   end
 end
