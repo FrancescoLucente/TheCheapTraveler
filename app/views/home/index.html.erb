@@ -3,7 +3,7 @@
 <html>
 <head>
   <title>The Cheap Traveler</title>
-  <%= javascript_pack_tag 'autocomplete' %>
+  <!--<%= javascript_pack_tag 'autocomplete' %>-->
 </head>
 </html>
 
@@ -91,6 +91,7 @@
           suggestionItem.onclick = () => {
             document.getElementById(suggestionListId.replace('_suggestions', '')).value = city;
             suggestionList.innerHTML = "";
+            
           };
           suggestionList.appendChild(suggestionItem);
         });
