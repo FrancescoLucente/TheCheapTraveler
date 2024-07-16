@@ -10,13 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_11_174443) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_15_202214) do
   create_table "cities", force: :cascade do |t|
     t.string "name"
     t.string "country"
     t.string "code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "latitude"
+    t.float "longitude"
+    t.float "temperature"
+    t.string "weather_description"
+    t.datetime "weather_datetime"
   end
 
   create_table "events", force: :cascade do |t|
@@ -40,6 +45,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_11_174443) do
     t.index ["city_id"], name: "index_photos_on_city_id"
   end
 
+  create_table "weathers", force: :cascade do |t|
+    t.integer "city_id", null: false
+    t.float "temperature"
+    t.text "description"
+    t.datetime "datetime"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["city_id"], name: "index_weathers_on_city_id"
+  end
+
   add_foreign_key "events", "cities"
   add_foreign_key "photos", "cities"
+  add_foreign_key "weathers", "cities"
 end

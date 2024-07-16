@@ -16,8 +16,12 @@ class CitiesController < ApplicationController
       @city = City.find(params[:id])
       @city.fetch_images_from_unsplash
       #@city.fetch_events_from_rapidapi commentata perchè sennò finivamo le richieste disponibili gratis
+      @weather = @city.fetch_weather
 
-    end
+      if @weather[:error]
+        flash[:alert] = "Could not fetch weather data: #{@weather[:error]}"
+      end
+  end 
   # GET /cities/new
   def new
     @city = City.new

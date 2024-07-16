@@ -1,7 +1,13 @@
+require 'net/http'
+require 'json'
+require 'geocoder'
+
 class City < ApplicationRecord
   has_many :photos, dependent: :destroy
   has_many :events, dependent: :destroy
- 
+  has_many :weathers, dependent: :destroy
+
+  
 
   def fetch_images_from_unsplash
     response = HTTParty.get("https://api.unsplash.com/search/photos", {
@@ -71,7 +77,36 @@ class City < ApplicationRecord
         puts "Errore durante la richiesta all'API: #{response.code} - #{response.message}"
       end
    end
-                              
+                     
+   def fetch_weather
+    url = URI("https://ai-weather-by-meteosource.p.rapidapi.com/current?lat=#{self.latitude}&lon=#{self.longitude}&timezone=auto&language=en&units=auto")
+  
+    http = Net::HTTP.new(url.host, url.port)
+    http.use_ssl = true
+  
+    request = Net::HTTP::Get.new(url)
+    request["X-RapidAPI-Key"] = 'da03b8da1amshe251ccba685cddap18f4e9jsnd1f33d6c395a'  # Sostituisci con la tua chiave API
+    request["X-RapidAPI-Host"] = 'ai-weather-by-meteosource.p.rapidapi.com'
+  
+    response = http.request(request)
+    weather_data = JSON.parse(response.body)
+  
+    if response.is_a?(Net::HTTPSuccess)
+      puts weather_data  # inserita per vedere l'intero dato ricevuto
+      current_weather = weather_data['current']
+      {
+        temperature: current_weather['temperature'],
+        description: current_weather['summary'],
+        datetime: current_weather['time']  # 
+      }
+    else
+      { error: weather_data['message'] }
+    end
+  end
+  
+
+  
+  
         
 end
 

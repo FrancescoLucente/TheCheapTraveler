@@ -70,3 +70,5 @@ end
 gem 'dotenv-rails', groups: [:development, :test]
 gem 'httparty'
 gem 'webpacker'
+gem 'geocoder'
+gem 'http'

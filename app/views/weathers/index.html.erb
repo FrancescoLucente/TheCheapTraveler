@@ -1,0 +1,28 @@
+<!-- app/views/weathers/index.html.erb -->
+<h1>Weathers for <%= @city.name %></h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Temperature</th>
+      <th>Description</th>
+      <th>Date and Time</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @weathers.each do |weather| %>
+      <tr>
+        <td><%= weather.temperature %></td>
+        <td><%= weather.description %></td>
+        <td><%= weather.datetime.strftime("%B %d, %Y %H:%M") %></td>
+        <td><%= link_to 'Show', city_weather_path(@city, weather) %></td>
+        <td><%= link_to 'Edit', edit_city_weather_path(@city, weather) %></td>
+        <td><%= link_to 'Destroy', city_weather_path(@city, weather), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to 'New Weather', new_city_weather_path(@city) %>

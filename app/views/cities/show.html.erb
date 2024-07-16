@@ -43,6 +43,17 @@
 </footer>
 <% end %>
 
+
+<!-- Sezione Meteo -->
+<% if @weather[:error] %>
+  <p><%= @weather[:error] %></p>
+<% else %>
+  <p>Temperatura: <%= @weather[:temperature] %>°C</p>
+  <p>Descrizione: <%= @weather[:description] %></p>
+  <p>Datetime: <%= @weather[:datetime] %></p>
+<% end %>
+
+
 <!-- Inizio del commento 
 <div>
   <%= link_to "Edit this city", edit_city_path(@city) %> |
