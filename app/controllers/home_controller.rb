@@ -11,6 +11,8 @@ class HomeController < ApplicationController
     destination_city = params[:destination_city]
     departure_date = params[:departure_date]
     number_of_people = params[:number_of_people]
+    number_of_infants=params[:number_of_infants]
+    number_of_children=params[:number_of_children]
     round_trip = params[:round_trip]
     return_date = params[:return_date]
 
