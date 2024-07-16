@@ -109,6 +109,3 @@ class City < ApplicationRecord
 
 
 end
-
-
-end
