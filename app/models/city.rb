@@ -6,7 +6,8 @@ class City < ApplicationRecord
   has_many :photos, dependent: :destroy
   has_many :events, dependent: :destroy
   has_many :weathers, dependent: :destroy
-
+  geocoded_by :name
+  after_validation :geocode, if: ->(obj){ obj.latitude.blank? && obj.longitude.blank? }
 
 
   def fetch_images_from_unsplash
@@ -23,9 +24,10 @@ class City < ApplicationRecord
       response['results'].each do |photo_data|
         self.photos.create!(image_url: photo_data['urls']['regular'])
       end
-     end
+    end
 
   end
+
 
     require 'uri'
 
@@ -51,7 +53,10 @@ class City < ApplicationRecord
         events_data.each do |event_data|
           name = event_data['name']
           description = event_data['description']
-          description=description.gsub(/[^a-zA-Z0-9\s.,&-]/, '')
+          if description
+            description = description.gsub(/[^a-zA-Z0-9\s.,&-]/, '')
+          end
+          
           start_time = DateTime.parse(event_data['start_time'])
           link=event_data['link']
           if event_data['end_time'].present?
@@ -76,9 +81,9 @@ class City < ApplicationRecord
       else
         puts "Errore durante la richiesta all'API: #{response.code} - #{response.message}"
       end
-   end
+    end
 
-   def fetch_weather
+    def fetch_weather
     url = URI("https://ai-weather-by-meteosource.p.rapidapi.com/current?lat=#{self.latitude}&lon=#{self.longitude}&timezone=auto&language=en&units=auto")
 
     http = Net::HTTP.new(url.host, url.port)
@@ -102,7 +107,7 @@ class City < ApplicationRecord
     else
       { error: weather_data['message'] }
     end
-  end
+    end
 
 
 
