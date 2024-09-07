@@ -1,0 +1,112 @@
+<%= form_with(model: trip) do |form| %>
+  <% if trip.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(trip.errors.count, "error") %> prohibited this trip from being saved:</h2>
+
+      <ul>
+        <% trip.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :trip_type, style: "display: block" %>
+    <%= form.text_field :trip_type %>
+  </div>
+
+  <div>
+    <%= form.label :departure_airport_outbound, style: "display: block" %>
+    <%= form.text_field :departure_airport_outbound %>
+  </div>
+
+  <div>
+    <%= form.label :arrival_airport_outbound, style: "display: block" %>
+    <%= form.text_field :arrival_airport_outbound %>
+  </div>
+
+  <div>
+    <%= form.label :departure_time_outbound, style: "display: block" %>
+    <%= form.datetime_field :departure_time_outbound %>
+  </div>
+
+  <div>
+    <%= form.label :arrival_time_outbound, style: "display: block" %>
+    <%= form.datetime_field :arrival_time_outbound %>
+  </div>
+
+  <div>
+    <%= form.label :duration_outbound, style: "display: block" %>
+    <%= form.number_field :duration_outbound %>
+  </div>
+
+  <div>
+    <%= form.label :stop_count_outbound, style: "display: block" %>
+    <%= form.number_field :stop_count_outbound %>
+  </div>
+
+  <div>
+    <%= form.label :is_direct_outbound, style: "display: block" %>
+    <%= form.check_box :is_direct_outbound %>
+  </div>
+
+  <div>
+    <%= form.label :departure_airport_inbound, style: "display: block" %>
+    <%= form.text_field :departure_airport_inbound %>
+  </div>
+
+  <div>
+    <%= form.label :arrival_airport_inbound, style: "display: block" %>
+    <%= form.text_field :arrival_airport_inbound %>
+  </div>
+
+  <div>
+    <%= form.label :departure_time_inbound, style: "display: block" %>
+    <%= form.datetime_field :departure_time_inbound %>
+  </div>
+
+  <div>
+    <%= form.label :arrival_time_inbound, style: "display: block" %>
+    <%= form.datetime_field :arrival_time_inbound %>
+  </div>
+
+  <div>
+    <%= form.label :duration_inbound, style: "display: block" %>
+    <%= form.number_field :duration_inbound %>
+  </div>
+
+  <div>
+    <%= form.label :stop_count_inbound, style: "display: block" %>
+    <%= form.number_field :stop_count_inbound %>
+  </div>
+
+  <div>
+    <%= form.label :is_direct_inbound, style: "display: block" %>
+    <%= form.check_box :is_direct_inbound %>
+  </div>
+
+  <div>
+    <%= form.label :total_price, style: "display: block" %>
+    <%= form.text_field :total_price %>
+  </div>
+
+  <div>
+    <%= form.label :total_duration, style: "display: block" %>
+    <%= form.number_field :total_duration %>
+  </div>
+
+  <div>
+    <%= form.label :is_change_allowed, style: "display: block" %>
+    <%= form.check_box :is_change_allowed %>
+  </div>
+
+  <div>
+    <%= form.label :is_cancellation_allowed, style: "display: block" %>
+    <%= form.check_box :is_cancellation_allowed %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

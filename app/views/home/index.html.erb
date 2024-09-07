@@ -10,7 +10,7 @@
 
 <h1>Search your trip</h1>
 
-<form action="/search_trip" method="post">
+<%= form_with url: trips_path, method: :get do %>
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
   <div>
@@ -56,7 +56,7 @@
   <div>
     <input type="submit" value="Cerca">
   </div>
-</form>
+<%end%>
 
 <h2>Search city</h2>
 

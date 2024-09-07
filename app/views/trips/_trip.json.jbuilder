@@ -1,0 +1,2 @@
+json.extract! trip, :id, :trip_type, :departure_airport_outbound, :arrival_airport_outbound, :departure_time_outbound, :arrival_time_outbound, :duration_outbound, :stop_count_outbound, :is_direct_outbound, :departure_airport_inbound, :arrival_airport_inbound, :departure_time_inbound, :arrival_time_inbound, :duration_inbound, :stop_count_inbound, :is_direct_inbound, :total_price, :total_duration, :is_change_allowed, :is_cancellation_allowed, :created_at, :updated_at
+json.url trip_url(trip, format: :json)

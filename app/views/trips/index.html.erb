@@ -1,0 +1,62 @@
+<<h1>Lista dei Viaggi</h1>
+
+<%= form_with url: trips_path, method: :get do %>
+  <!-- Il tuo form per la ricerca -->
+  <div>
+    <label for="departure_city">Departure city:</label>
+    <input type="text" id="departure_city" name="departure_city" required>
+  </div>
+  
+  <!-- Altri campi del form qui... -->
+  
+  <div>
+    <input type="submit" value="Cerca">
+  </div>
+<% end %>
+
+<% if @trips.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Tipo di viaggio</th>
+        <th>Aeroporto di Partenza</th>
+        <th>Aeroporto di Arrivo</th>
+        <th>Ora di Partenza</th>
+        <th>Ora di Arrivo</th>
+        <th>Durata</th>
+        <th>Prezzo Totale</th>
+        <th>Diretto?</th>
+        <% if @trips.first[:trip_type] == 'round_trip' %>
+          <th>Ritorno: Aeroporto di Partenza</th>
+          <th>Ritorno: Aeroporto di Arrivo</th>
+          <th>Ora di Partenza Ritorno</th>
+          <th>Ora di Arrivo Ritorno</th>
+          <th>Durata Ritorno</th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% @trips.each do |trip| %>
+        <tr>
+          <td><%= trip[:trip_type] %></td>
+          <td><%= trip[:departure_airport_outbound] %></td>
+          <td><%= trip[:arrival_airport_outbound] %></td>
+          <td><%= trip[:departure_time_outbound] %></td>
+          <td><%= trip[:arrival_time_outbound] %></td>
+          <td><%= trip[:duration_outbound] %> min</td>
+          <td><%= trip[:total_price] %> EUR</td>
+          <td><%= trip[:is_direct_outbound] ? "Sì" : "No" %></td>
+          <% if trip[:trip_type] == 'round_trip' %>
+            <td><%= trip[:departure_airport_inbound] %></td>
+            <td><%= trip[:arrival_airport_inbound] %></td>
+            <td><%= trip[:departure_time_inbound] %></td>
+            <td><%= trip[:arrival_time_inbound] %></td>
+            <td><%= trip[:duration_inbound] %> min</td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>Nessun viaggio trovato.</p>
+<% end %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_06_133114) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_07_083919) do
   create_table "cities", force: :cascade do |t|
     t.string "name"
     t.string "country"
@@ -43,6 +43,30 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_06_133114) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["city_id"], name: "index_photos_on_city_id"
+  end
+
+  create_table "trips", force: :cascade do |t|
+    t.string "trip_type"
+    t.string "departure_airport_outbound"
+    t.string "arrival_airport_outbound"
+    t.datetime "departure_time_outbound"
+    t.datetime "arrival_time_outbound"
+    t.integer "duration_outbound"
+    t.integer "stop_count_outbound"
+    t.boolean "is_direct_outbound"
+    t.string "departure_airport_inbound"
+    t.string "arrival_airport_inbound"
+    t.datetime "departure_time_inbound"
+    t.datetime "arrival_time_inbound"
+    t.integer "duration_inbound"
+    t.integer "stop_count_inbound"
+    t.boolean "is_direct_inbound"
+    t.decimal "total_price"
+    t.integer "total_duration"
+    t.boolean "is_change_allowed"
+    t.boolean "is_cancellation_allowed"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "weathers", force: :cascade do |t|
