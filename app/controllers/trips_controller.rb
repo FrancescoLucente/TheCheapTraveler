@@ -5,14 +5,10 @@ class TripsController < ApplicationController
   require 'json'
   # GET /trips or /trips.json
   
-    def index
-      if params[:departure_city].present? && params[:destination_city].present?
-        @trips = search_trip(params)
-        puts @trips.inspect # Debug: visualizza i risultati
-      else
-        @trips = []
-      end
-    end
+  def index
+    @trips = Trip.all
+  end
+  
   
   
   # GET /trips/1 or /trips/1.json
@@ -66,8 +62,8 @@ class TripsController < ApplicationController
     end
   end
 
-  def search_trip(params)
-    puts("inizio a cercare")
+  def search_trip
+    # Parametri del form
     departure_city = params[:departure_city]
     destination_city = params[:destination_city]
     departure_date = params[:departure_date]
@@ -76,30 +72,29 @@ class TripsController < ApplicationController
     number_of_children = params[:number_of_children]
     number_of_infants = params[:number_of_infants]
   
+    # Cancella tutti i viaggi esistenti nel database
+    Trip.delete_all
+  
+    # Cerca i nuovi viaggi tramite l'API
     departure_sky_id = get_sky_id(departure_city)
-    
     destination_sky_id = get_sky_id(destination_city)
-    puts "Sky ID Partenza: #{departure_sky_id}, Sky ID Destinazione: #{destination_sky_id}"
-
-
   
-    return [] if departure_sky_id.nil? || destination_sky_id.nil?
+    return redirect_to trips_path, alert: "Città non trovata" if departure_sky_id.nil? || destination_sky_id.nil?
   
-    flights = []
-    if params[:round_trip] == 'yes'
-      flights = search_round_trip_flight(departure_sky_id, destination_sky_id, departure_date, return_date, number_of_people, number_of_children, number_of_infants)
-    else
-      flights = search_one_way_flight(departure_sky_id, destination_sky_id, departure_date, number_of_people, number_of_children, number_of_infants)
-     
-
-    end
+    flights = if params[:round_trip] == 'yes'
+                search_round_trip_flight(departure_sky_id, destination_sky_id, departure_date, return_date, number_of_people, number_of_children, number_of_infants)
+              else
+                search_one_way_flight(departure_sky_id, destination_sky_id, departure_date, number_of_people, number_of_children, number_of_infants)
+              end
   
-    return [] if flights.empty?
-    puts("inizio a creare le istanze")
-    # Costruisci gli oggetti Trip in memoria senza salvarli nel DB
-    trips = flights.map do |flight|
+    # Se non ci sono voli, reindirizza con un messaggio
+    return redirect_to trips_path, alert: "Nessun volo trovato." if flights.empty?
+  
+    # Salva i viaggi nel database
+    flights.each do |flight|
       outbound_leg = flight['legs'][0]
-      trip = {
+  
+      trip = Trip.new(
         trip_type: params[:round_trip] == 'yes' ? 'round_trip' : 'one_way',
         departure_airport_outbound: outbound_leg['origin']['name'],
         arrival_airport_outbound: outbound_leg['destination']['name'],
@@ -112,11 +107,11 @@ class TripsController < ApplicationController
         total_duration: outbound_leg['durationInMinutes'],
         is_change_allowed: flight['farePolicy']['isChangeAllowed'],
         is_cancellation_allowed: flight['farePolicy']['isCancellationAllowed']
-      }
+      )
   
       if params[:round_trip] == 'yes'
         inbound_leg = flight['legs'][1]
-        trip.merge!({
+        trip.update(
           departure_airport_inbound: inbound_leg['origin']['name'],
           arrival_airport_inbound: inbound_leg['destination']['name'],
           departure_time_inbound: inbound_leg['departure'],
@@ -124,14 +119,15 @@ class TripsController < ApplicationController
           duration_inbound: inbound_leg['durationInMinutes'],
           stop_count_inbound: inbound_leg['stopCount'],
           is_direct_inbound: inbound_leg['stopCount'] == 0
-        })
-        trip[:total_duration] += inbound_leg['durationInMinutes']
+        )
+        trip.total_duration += inbound_leg['durationInMinutes']
       end
   
-      trip
+      trip.save!
     end
   
-    return trips
+    # Reindirizza all'index dopo aver popolato il database
+    redirect_to trips_path, notice: "Ricerca completata!"
   end
   
 

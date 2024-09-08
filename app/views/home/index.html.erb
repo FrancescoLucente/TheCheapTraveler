@@ -10,7 +10,7 @@
 
 <h1>Search your trip</h1>
 
-<%= form_with url: trips_path, method: :get do %>
+<%= form_with url: search_trip_trips_path, method: :post do %>
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
   <div>

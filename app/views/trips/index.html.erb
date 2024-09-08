@@ -1,18 +1,6 @@
-<<h1>Lista dei Viaggi</h1>
+<h1>Lista dei Viaggi</h1>
 
-<%= form_with url: trips_path, method: :get do %>
-  <!-- Il tuo form per la ricerca -->
-  <div>
-    <label for="departure_city">Departure city:</label>
-    <input type="text" id="departure_city" name="departure_city" required>
-  </div>
-  
-  <!-- Altri campi del form qui... -->
-  
-  <div>
-    <input type="submit" value="Cerca">
-  </div>
-<% end %>
+
 
 <% if @trips.any? %>
   <table>
@@ -60,3 +48,126 @@
 <% else %>
   <p>Nessun viaggio trovato.</p>
 <% end %>
+<%= form_with url: trips_path, method: :get, class: "horizontal-form" do %>
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+
+  <div class="form-group">
+    <label for="departure_city">Departure city:</label>
+    <input type="text" id="departure_city" name="departure_city" required onkeyup="suggestCities(this.value, 'departure_suggestions', 'departure_city')">
+    <ul id="departure_suggestions" class="suggestions"></ul>
+  </div>
+
+  <div class="form-group">
+    <label for="destination_city">Destination city:</label>
+    <input type="text" id="destination_city" name="destination_city" required onkeyup="suggestCities(this.value, 'destination_suggestions', 'destination_city')">
+    <ul id="destination_suggestions" class="suggestions"></ul>
+  </div>
+
+  <div class="form-group">
+    <label for="departure_date">Departure date:</label>
+    <input type="date" id="departure_date" name="departure_date" required>
+  </div>
+
+  <div class="form-group">
+    <label for="number_of_people">Number of adults:</label>
+    <input type="number" id="number_of_people" name="number_of_people" min="1" required>
+  </div>
+
+  <div class="form-group">
+    <label for="number_of_children">Number of children:</label>
+    <input type="number" id="number_of_children" name="number_of_children" min="0" required>
+  </div>
+
+  <div class="form-group">
+    <label for="number_of_infants">Number of infants:</label>
+    <input type="number" id="number_of_infants" name="number_of_infants" min="0" required>
+  </div>
+
+  <div class="form-group">
+    <input type="checkbox" id="round_trip" name="round_trip" value="yes" onclick="toggleReturnDate()">
+    <label for="round_trip">Roundtrip</label>
+  </div>
+
+  <div class="form-group" id="return_date_div" style="display:none;">
+    <label for="return_date">Return date:</label>
+    <input type="date" id="return_date" name="return_date">
+  </div>
+
+  <div class="form-group">
+    <input type="submit" value="Cerca">
+  </div>
+<% end %>
+
+<script>
+  function toggleReturnDate() {
+    var roundTripCheckbox = document.getElementById('round_trip');
+    var returnDateDiv = document.getElementById('return_date_div');
+    if (roundTripCheckbox.checked) {
+      returnDateDiv.style.display = 'block';
+    } else {
+      returnDateDiv.style.display = 'none';
+    }
+  }
+
+  function suggestCities(query, suggestionListId, inputId) {
+    if (query.length === 0) {
+      document.getElementById(suggestionListId).innerHTML = "";
+      return;
+    }
+
+    fetch(`/suggest_cities?query=${query}`)
+      .then(response => response.json())
+      .then(data => {
+        const suggestionList = document.getElementById(suggestionListId);
+        suggestionList.innerHTML = "";
+
+        data.forEach(city => {
+          const suggestionItem = document.createElement('li');
+          suggestionItem.textContent = city.name;
+          suggestionItem.onclick = () => {
+            document.getElementById(inputId).value = city.name;
+            suggestionList.innerHTML = "";
+          };
+          suggestionList.appendChild(suggestionItem);
+        });
+      });
+  }
+</script>
+<style>
+  .horizontal-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Spaziatura tra i campi */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column; /* Mantiene le etichette sopra gli input */
+  min-width: 200px; /* Assicura che i campi abbiano una dimensione minima */
+}
+
+/* Regola la larghezza dei campi */
+.form-group input, .form-group select, .form-group label {
+  width: 100%;
+}
+
+.suggestions {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid;
+  max-width: 200px;
+  position: absolute;
+  background: white;
+}
+
+.suggestions li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.suggestions li:hover {
+  background-color: #f0f0f0;
+}
+
+</style>

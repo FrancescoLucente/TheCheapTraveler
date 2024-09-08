@@ -3,7 +3,7 @@
 Rails.application.routes.draw do
   resources :trips do
     collection do
-      get:search_trip
+      post:search_trip
     end
   end
   resources :weathers
