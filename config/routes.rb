@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   resources :weathers
   resources :cities do
     resources :events, only: [:index, :show]
+    resources :reviews
+
   end
 
   # Rotte personalizzate per il HomeController

@@ -54,6 +54,40 @@
 <% end %>
 
 
+<h2>Recensioni</h2>
+<% if @reviews.any? %>
+  <ul>
+    <% @reviews.each do |review| %>
+      <li>
+        <strong><%= review.author %>:</strong>
+        <%= review.content %> 
+        <em>(<%= review.created_at.strftime("%Y-%m-%d") %>)</em>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>Non ci sono recensioni per questa città.</p>
+<% end %>
+
+<h2>Aggiungi una recensione</h2>
+<%= form_with model: [@city, Review.new], local: true do |form| %>
+  <div class="field">
+    <%= form.label :author %>
+    <%= form.text_field :author %>
+  </div>
+  
+  <div class="field">
+    <%= form.label :content %>
+    <%= form.text_area :content %>
+  </div>
+  
+  <div class="actions">
+    <%= form.submit 'Aggiungi Recensione' %>
+  </div>
+<% end %>
+
+
+
 <!-- Inizio del commento 
 <div>
   <%= link_to "Edit this city", edit_city_path(@city) %> |

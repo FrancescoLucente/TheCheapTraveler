@@ -6,6 +6,8 @@ class City < ApplicationRecord
   has_many :photos, dependent: :destroy
   has_many :events, dependent: :destroy
   has_many :weathers, dependent: :destroy
+  has_many :reviews, dependent: :destroy
+
 
   
 

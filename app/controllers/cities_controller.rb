@@ -21,6 +21,9 @@ class CitiesController < ApplicationController
       if @weather[:error]
         flash[:alert] = "Could not fetch weather data: #{@weather[:error]}"
       end
+
+      @city = City.find(params[:id])
+      @reviews = @city.reviews
   end 
   # GET /cities/new
   def new
