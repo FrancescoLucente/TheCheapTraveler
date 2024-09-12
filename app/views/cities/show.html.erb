@@ -1,7 +1,15 @@
 <p style="color: green"><%= notice %></p>
 
-<h1><%=@city.name + ", " + @city.country%> </h1>
 
+<div class="back-arrow">
+      <a href="#" onclick="window.history.back(); return false;" title="Go back">
+        &#8592; <!-- Codice della freccia (←) -->
+      </a>
+    </div>
+
+  <!-- Titolo centrato -->
+  <h1 class="text-center flex-grow-1"><%=@city.name + ", " + @city.country%></h1>
+</div>
 
 <div class="central-column">
   <h2><%=link_to "Events",city_events_path(@city) %></h2>

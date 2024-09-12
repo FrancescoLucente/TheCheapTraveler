@@ -1,25 +1,58 @@
-<h1>Lista dei Viaggi</h1>
+<div class="d-flex justify-content-between align-items-center">
+  <!-- Link per tornare alla home -->
+  <div class="back-arrow">
+      <a href="#" onclick="window.history.back(); return false;" title="Go back">
+        &#8592; <!-- Codice della freccia (←) -->
+      </a>
+    </div>
 
+  <!-- Titolo centrato -->
+  <h1 class="text-center flex-grow-1">Trip List</h1>
+</div>
 
+<%= form_with url: trips_path, method: :get, class: "horizontal-form" do %>
+  <div class="form-group">
+    <!-- Checkbox for direct flights -->
+    <input type="checkbox" id="direct_flights" name="direct" value="yes" <%= 'checked' if params[:direct] == 'yes' %>>
+    <label for="direct_flights">Show only direct flights</label>
+  </div>
 
+  <div class="form-group">
+    <!-- Checkbox for flexible flights -->
+    <input type="checkbox" id="flexible_flights" name="flexible" value="yes" <%= 'checked' if params[:flexible] == 'yes' %>>
+    <label for="flexible_flights">Show only flexible flights</label>
+  </div>
+
+  <div class="form-group">
+    <!-- Input field for budget -->
+    <label for="budget">Budget (EUR):</label>
+    <input type="number" id="budget" name="budget" value="<%= params[:budget] %>" placeholder="Enter your budget">
+  </div>
+
+  <div class="form-group">
+    <input type="submit" value="Apply Filters">
+  </div>
+<% end %>
 <% if @trips.any? %>
   <table>
     <thead>
-      <tr>
-        <th>Tipo di viaggio</th>
-        <th>Aeroporto di Partenza</th>
-        <th>Aeroporto di Arrivo</th>
-        <th>Ora di Partenza</th>
-        <th>Ora di Arrivo</th>
-        <th>Durata</th>
-        <th>Prezzo Totale</th>
-        <th>Diretto?</th>
+        <tr>
+        <th>Trip Type</th>
+        <th>Departure Airport</th>
+        <th>Arrival Airport</th>
+        <!-- Modify the sorting links to include current filter parameters -->
+        <th><%= link_to 'Departure Time', trips_path(sort: 'departure_time_outbound', direct: params[:direct], flexible: params[:flexible], budget: params[:budget]) %></th>
+        <th><%= link_to 'Arrival Time', trips_path(sort: 'arrival_time_outbound', direct: params[:direct], flexible: params[:flexible], budget: params[:budget]) %></th>
+        <th><%= link_to 'Duration', trips_path(sort: 'duration_outbound', direct: params[:direct], flexible: params[:flexible], budget: params[:budget]) %></th>
+        <th><%= link_to 'Total Price', trips_path(sort: 'total_price', direct: params[:direct], flexible: params[:flexible], budget: params[:budget]) %></th>
+        <th>Direct?</th>
+
         <% if @trips.first[:trip_type] == 'round_trip' %>
-          <th>Ritorno: Aeroporto di Partenza</th>
-          <th>Ritorno: Aeroporto di Arrivo</th>
-          <th>Ora di Partenza Ritorno</th>
-          <th>Ora di Arrivo Ritorno</th>
-          <th>Durata Ritorno</th>
+          <th>Return: Departure Airport</th>
+          <th>Return: Arrival Airport</th>
+          <th><%= link_to 'Return: Departure Time', trips_path(sort: 'departure_time_inbound', direct: params[:direct], flexible: params[:flexible], budget: params[:budget]) %></th>
+          <th><%= link_to 'Return: Arrival Time', trips_path(sort: 'arrival_time_inbound', direct: params[:direct], flexible: params[:flexible], budget: params[:budget]) %></th>
+          <th><%= link_to 'Return Duration', trips_path(sort: 'duration_inbound', direct: params[:direct], flexible: params[:flexible], budget: params[:budget]) %></th>
         <% end %>
       </tr>
     </thead>
@@ -29,26 +62,29 @@
           <td><%= trip[:trip_type] %></td>
           <td><%= trip[:departure_airport_outbound] %></td>
           <td><%= trip[:arrival_airport_outbound] %></td>
-          <td><%= trip[:departure_time_outbound] %></td>
-          <td><%= trip[:arrival_time_outbound] %></td>
+          <td><%= trip[:departure_time_outbound].strftime("%d-%m-%Y %H:%M") %></td>
+          <td><%= trip[:arrival_time_outbound].strftime("%d-%m-%Y %H:%M") %></td>
           <td><%= trip[:duration_outbound] %> min</td>
           <td><%= trip[:total_price] %> EUR</td>
-          <td><%= trip[:is_direct_outbound] ? "Sì" : "No" %></td>
+          <td><%= trip[:is_direct_outbound] ? "Yes" : "No" %></td>
           <% if trip[:trip_type] == 'round_trip' %>
             <td><%= trip[:departure_airport_inbound] %></td>
             <td><%= trip[:arrival_airport_inbound] %></td>
-            <td><%= trip[:departure_time_inbound] %></td>
-            <td><%= trip[:arrival_time_inbound] %></td>
+            <td><%= trip[:departure_time_inbound].strftime("%d-%m-%Y %H:%M") %></td>
+            <td><%= trip[:arrival_time_inbound].strftime("%d-%m-%Y %H:%M") %></td>
             <td><%= trip[:duration_inbound] %> min</td>
+            <td><%= trip[:is_direct_inbound] ? "Yes" : "No" %></td>
           <% end %>
         </tr>
       <% end %>
     </tbody>
   </table>
 <% else %>
-  <p>Nessun viaggio trovato.</p>
+  <p>No trips found.</p>
 <% end %>
-<%= form_with url: trips_path, method: :get, class: "horizontal-form" do %>
+
+<!-- Search Form -->
+<%= form_with url: search_trip_trips_path, method: :post, class: "horizontal-form" do %>
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
   <div class="form-group">
@@ -94,7 +130,7 @@
   </div>
 
   <div class="form-group">
-    <input type="submit" value="Cerca">
+    <input type="submit" value="Search">
   </div>
 <% end %>
 
@@ -133,20 +169,21 @@
       });
   }
 </script>
+
 <style>
   .horizontal-form {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px; /* Spaziatura tra i campi */
+  gap: 20px; /* Space between fields */
 }
 
 .form-group {
   display: flex;
-  flex-direction: column; /* Mantiene le etichette sopra gli input */
-  min-width: 200px; /* Assicura che i campi abbiano una dimensione minima */
+  flex-direction: column; /* Keep labels above inputs */
+  min-width: 200px; /* Ensure fields have a minimum size */
 }
 
-/* Regola la larghezza dei campi */
+/* Adjust the width of the fields */
 .form-group input, .form-group select, .form-group label {
   width: 100%;
 }

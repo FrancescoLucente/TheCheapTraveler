@@ -32,16 +32,16 @@
 
   <div>
     <label for="number_of_people">Number of adults:</label>
-    <input type="number" id="number_of_people" name="number_of_people" min="1" required>
+    <input type="number" id="number_of_people" name="number_of_people" value="1" min="1" required>
   </div>
   <div>
     <label for="number_of_children">Number of children:</label>
-    <input type="number" id="number_of_children" name="number_of_children" min="0" required>
+    <input type="number" id="number_of_children" name="number_of_children" value="0"min="0" required>
   </div>
 
   <div>
     <label for="number_of_infants">Number of infants:</label>
-    <input type="number" id="number_of_infants" name="number_of_infants" min="0" required>
+    <input type="number" id="number_of_infants" name="number_of_infants" value="0" min="0" required>
   </div>
   <div>
     <input type="checkbox" id="round_trip" name="round_trip" value="yes" onclick="toggleReturnDate()">
@@ -54,7 +54,7 @@
   </div>
 
   <div>
-    <input type="submit" value="Cerca">
+    <input type="submit" value="Search Flights">
   </div>
 <%end%>
 
@@ -65,9 +65,12 @@
     <label for="city_name">Search city by name:</label>
     <input type="text" id="city_name" name="city_name" required onkeyup="suggestCities(this.value, 'city_suggestions', 'city_name')">
     <ul id="city_suggestions" class="suggestions"></ul>
-    <input type="submit" value="Cerca">
+    <input type="submit" value="Search">
   </div>
 </form>
+<div class="suggest-ideas">
+  <p>Do you need any ideas? <%= link_to 'Click here', cities_path %></p>
+</div>
 
 <script>
   function toggleReturnDate() {
@@ -123,5 +126,18 @@
   .suggestions li:hover {
     background-color:
   }
+  .suggest-ideas {
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+.suggest-ideas a {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.suggest-ideas a:hover {
+  color: #0056b3;
+}
 </style>
 

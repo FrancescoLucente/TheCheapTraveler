@@ -7,6 +7,26 @@ class TripsController < ApplicationController
   
   def index
     @trips = Trip.all
+    # Filtra per voli diretti se il parametro `direct` è presente
+  if params[:direct] == 'yes'
+    @trips = @trips.where(is_direct_outbound: true)
+  end
+
+  # Filtra per voli che si possono cambiare se il parametro `flexible` è presente
+  if params[:flexible] == 'yes'
+    @trips = @trips.where(is_change_allowed: true) # Assumendo che tu abbia un campo `is_flexible`
+  end
+  if params[:budget].present?
+    budget = params[:budget].to_f
+    @trips = @trips.where("total_price <= ?", budget)
+  end
+    # Lista delle colonne ordinabili
+    sortable_columns = ['departure_time_outbound', 'arrival_time_outbound', 'duration_outbound', 'total_price', 'departure_time_inbound', 'arrival_time_inbound', 'duration_inbound']
+  
+    if params[:sort].present? && sortable_columns.include?(params[:sort])
+      @trips = @trips.order("#{params[:sort]} ASC")
+    end
+    
   end
   
   
@@ -88,12 +108,10 @@ class TripsController < ApplicationController
               end
   
     # Se non ci sono voli, reindirizza con un messaggio
-    return redirect_to trips_path, alert: "Nessun volo trovato." if flights.empty?
-  
+    return redirect_to trips_path, alert: "Nessun volo trovato." if flights['itineraries'].empty?
     # Salva i viaggi nel database
-    flights.each do |flight|
+    flights['itineraries'].each do |flight|
       outbound_leg = flight['legs'][0]
-  
       trip = Trip.new(
         trip_type: params[:round_trip] == 'yes' ? 'round_trip' : 'one_way',
         departure_airport_outbound: outbound_leg['origin']['name'],
@@ -183,9 +201,10 @@ class TripsController < ApplicationController
       
         response = http.request(request)
         data = JSON.parse(response.body)
+         
       
         # Restituisci i risultati dei voli, adattati alla tua struttura
-        return data['data']['itineraries'] rescue []
+        return data['data'] rescue []
       end
 
       def search_round_trip_flight(departure_sky_id, destination_sky_id, departure_date, return_date, adults, children, infants)
@@ -203,10 +222,10 @@ class TripsController < ApplicationController
       
         response = http.request(request)
         data = JSON.parse(response.body)
-        puts "Risultati API One-Way: #{data.inspect}"
+        
 
         # Restituisci i risultati dei voli, adattati alla tua struttura
-        return data['data']['itineraries'] rescue []
+        return data['data']rescue []
       end
       
     
