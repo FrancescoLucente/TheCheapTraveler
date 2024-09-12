@@ -1,5 +1,5 @@
 class ReviewsController < ApplicationController
-  before_action :set_review, only: %i[ show edit update destroy ]
+
 
   # GET /reviews or /reviews.json
   def index
@@ -53,22 +53,28 @@ class ReviewsController < ApplicationController
       end
     end
   end
-
-  # DELETE /reviews/1 or /reviews/1.json
+  
   def destroy
-    @review.destroy!
-
+    Rails.logger.debug "City ID: #{params[:city_id]}, Review ID: #{params[:id]}"
+    @review=Review.find_by(id:params[:id])
+    @city=City.find_by(id:params[:city_id])
+    @review.destroy
     respond_to do |format|
-      format.html { redirect_to reviews_url, notice: "Review was successfully destroyed." }
+      format.html { redirect_to city_path(@city), notice: 'Recensione eliminata con successo.' }
       format.json { head :no_content }
     end
   end
+  
+
+  
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_review
-      @review = Review.find(params[:id])
-      @city = @review.city
+      @review = @city.reviews.find_by(id: params[:id])
+      unless @review
+        redirect_to city_path(@city), alert: 'Recensione non trovata.'
+      end
     end
     
 

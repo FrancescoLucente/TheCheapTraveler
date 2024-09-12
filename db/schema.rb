@@ -10,22 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema[7.1].define(version: 2024_09_08_143220) do
-=======
-ActiveRecord::Schema[7.1].define(version: 2024_09_09_113618) do
->>>>>>> 136faba2fc52dbecfa9df327f7bf0b6ab2ccf895
+ActiveRecord::Schema[7.1].define(version: 2024_09_12_154555) do
   create_table "cities", force: :cascade do |t|
     t.string "name"
     t.string "country"
     t.string "code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.float "latitude"
-    t.float "longitude"
     t.float "temperature"
     t.string "weather_description"
     t.datetime "weather_datetime"
+    t.float "latitude"
+    t.float "longitude"
   end
 
   create_table "events", force: :cascade do |t|
@@ -97,6 +93,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_09_113618) do
     t.string "provider"
     t.string "uid"
     t.string "name"
+    t.string "role", default: "user"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

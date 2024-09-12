@@ -9,4 +9,22 @@ class User < ApplicationRecord
       user.name = auth.info.name if user.respond_to?(:name) # Assicurati che il campo 'name' esista
     end
   end
+  before_create :set_default_role
+
+  def set_default_role
+    self.role ||= 'user'
+  end
+
+  # Helper methods per controllare i ruoli
+  def admin?
+    role == 'admin'
+  end
+
+  def mod?
+    role == 'mod'
+  end
+
+  def user?
+    role == 'user'
+  end
 end

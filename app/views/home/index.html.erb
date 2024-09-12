@@ -75,6 +75,34 @@
 <% if user_signed_in? %>
   <p>Benvenuto, <%= current_user.name %>!</p>
   <%= link_to 'Esci', destroy_user_session_path, method: :delete %>
+    <% if current_user.admin? %>
+    <h3>Set Admin</h3>
+    <%= form_with url: make_admin_users_path, method: :patch do %>
+      <label for="admin_email">Email dell'utente da nominare Admin:</label>
+      <input type="email" name="email" id="admin_email" required>
+      <input type="submit" value="Set Admin">
+    <% end %>
+  <% end %>
+
+  <!-- Form visibile per admin e mod -->
+  <% if current_user.admin? || current_user.mod? %>
+    <h3>Set Mod</h3>
+    <%= form_with url: make_mod_users_path, method: :patch do %>
+      <label for="mod_email">Email dell'utente da nominare Mod:</label>
+      <input type="email" name="email" id="mod_email" required>
+      <input type="submit" value="Set Mod">
+    <% end %>
+  <% end %>
+
+  <!-- Form visibile solo per gli admin -->
+  <% if current_user.admin? %>
+    <h3>Remove Mod</h3>
+    <%= form_with url: remove_mod_users_path, method: :patch do %>
+      <label for="remove_mod_email">Email dell'utente da rimuovere da Mod:</label>
+      <input type="email" name="email" id="remove_mod_email" required>
+      <input type="submit" value="Remove Mod">
+    <% end %>
+  <% end %>
 <% else %>
   <%= link_to 'Accedi', new_user_session_path, class: 'button' %>
   <%= link_to 'Registrati', new_user_registration_path, class: 'button' %>

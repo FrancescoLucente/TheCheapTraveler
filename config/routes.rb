@@ -9,6 +9,12 @@ Rails.application.routes.draw do
     get 'users/sign_out', to: 'devise/sessions#destroy'
   end
 
+resources :users, only: [] do
+  patch 'make_admin', on: :collection
+  patch 'make_mod', on: :collection
+  patch 'remove_mod', on: :collection
+end
+
   # Definisci la rotta principale
   root to: 'home#index'
 
@@ -22,7 +28,7 @@ Rails.application.routes.draw do
   resources :weathers
   resources :cities do
     resources :events, only: [:index, :show]
-    resources :reviews
+    resources :reviews, only: [:create, :destroy]
   end
 
   # Rotte personalizzate per il HomeController
