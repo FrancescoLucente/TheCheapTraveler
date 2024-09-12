@@ -72,6 +72,14 @@
   <p>Do you need any ideas? <%= link_to 'Click here', cities_path %></p>
 </div>
 
+<% if user_signed_in? %>
+  <p>Benvenuto, <%= current_user.name %>!</p>
+  <%= link_to 'Esci', destroy_user_session_path, method: :delete %>
+<% else %>
+  <%= link_to 'Accedi', new_user_session_path, class: 'button' %>
+  <%= link_to 'Registrati', new_user_registration_path, class: 'button' %>
+<% end %>
+
 <script>
   function toggleReturnDate() {
     var roundTripCheckbox = document.getElementById('round_trip');

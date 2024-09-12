@@ -1,6 +1,7 @@
 <p style="color: green"><%= notice %></p>
 
 
+
 <div class="back-arrow">
       <a href="#" onclick="window.history.back(); return false;" title="Go back">
         &#8592; <!-- Codice della freccia (←) -->
@@ -11,20 +12,18 @@
   <h1 class="text-center flex-grow-1"><%=@city.name + ", " + @city.country%></h1>
 </div>
 
+
 <div class="central-column">
-  <h2><%=link_to "Events",city_events_path(@city) %></h2>
+  <h2><%= link_to "Events", city_events_path(@city) %></h2>
   <% @city.events.order(event_date: :asc).limit(3).each do |event| %>
     <div class="event-item">
        <h3><%= link_to event.name, city_event_path(@city, event) %></h3>
       <p>Date: <%= event.event_date.strftime("%B %d, %Y  %H:%M") %></p>
-      <!-- Aggiungi altre informazioni sull'evento se necessario -->
     </div>
   <% end %>
 </div>
 
-
 <% if @city.photos.any? %>
-<!-- Aggiunta della footer per le foto -->
 <footer>
   <div id="carouselExampleIndicators" class="carousel slide footer-photos" data-ride="carousel">
     <ol class="carousel-indicators">
@@ -51,7 +50,6 @@
 </footer>
 <% end %>
 
-
 <!-- Sezione Meteo -->
 <% if @weather[:error] %>
   <p><%= @weather[:error] %></p>
@@ -61,6 +59,37 @@
   <p>Datetime: <%= @weather[:datetime] %></p>
 <% end %>
 
+<h2>Recensioni</h2>
+<% if @reviews.any? %>
+  <ul>
+    <% @reviews.each do |review| %>
+      <li>
+        <strong><%= review.user.name %>:</strong> <!-- Mostra il nome dell'utente come autore -->
+        <%= review.content %> 
+        <em>(<%= review.created_at.strftime("%Y-%m-%d") %>)</em>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>Non ci sono recensioni per questa città.</p>
+<% end %>
+
+<h2>Aggiungi una recensione</h2>
+
+<% if user_signed_in? %> <!-- Solo utenti autenticati possono lasciare recensioni -->
+  <%= form_with model: [@city, Review.new], local: true do |form| %>
+    <div class="field">
+      <%= form.label :content, "Scrivi la tua recensione" %>
+      <%= form.text_area :content %>
+    </div>
+
+    <div class="actions">
+      <%= form.submit 'Aggiungi Recensione' %>
+    </div>
+  <% end %>
+<% else %>
+  <p>Devi essere <%= link_to 'loggato', new_user_session_path %> per lasciare una recensione.</p>
+<% end %>
 
 <!-- Inizio del commento 
 <div>
@@ -70,5 +99,3 @@
   <%= button_to "Destroy this city", @city, method: :delete %>
 </div>
 fine del commento -->
-
-

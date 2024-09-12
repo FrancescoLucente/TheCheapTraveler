@@ -6,6 +6,8 @@ class City < ApplicationRecord
   has_many :photos, dependent: :destroy
   has_many :events, dependent: :destroy
   has_many :weathers, dependent: :destroy
+  has_many :reviews, dependent: :destroy
+
   geocoded_by :name
   after_validation :geocode, if: ->(obj){ obj.latitude.blank? && obj.longitude.blank? }
 
