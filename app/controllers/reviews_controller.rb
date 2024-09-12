@@ -25,12 +25,15 @@ class ReviewsController < ApplicationController
   def create
     @city = City.find(params[:city_id])  # Cerca la città a cui si associa la recensione
     @review = @city.reviews.build(review_params)  # Crea la recensione associata alla città
+    @review.user = current_user # Associa la recensione all'utente attuale
+
   
     respond_to do |format|
       if @review.save
         format.html { redirect_to city_url(@city), notice: "Recensione creata con successo." }
         format.json { render :show, status: :created, location: @review }
       else
+        render :new
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @review.errors, status: :unprocessable_entity }
       end
