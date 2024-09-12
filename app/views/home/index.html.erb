@@ -74,7 +74,7 @@
 
 <% if user_signed_in? %>
   <p>Benvenuto, <%= current_user.name %>!</p>
-  <%= link_to 'Esci', destroy_user_session_path, method: :delete %>
+  <%= link_to 'Logout', destroy_user_session_path, method: :delete %>
     <% if current_user.admin? %>
     <h3>Set Admin</h3>
     <%= form_with url: make_admin_users_path, method: :patch do %>
@@ -104,8 +104,8 @@
     <% end %>
   <% end %>
 <% else %>
-  <%= link_to 'Accedi', new_user_session_path, class: 'button' %>
-  <%= link_to 'Registrati', new_user_registration_path, class: 'button' %>
+  <%= link_to 'Sign In', new_user_session_path, class: 'button' %>
+  <%= link_to 'Sign Up', new_user_registration_path, class: 'button' %>
 <% end %>
 
 <script>

@@ -57,16 +57,16 @@
     <% if user_signed_in? %>
       <%= form_with model: [@city, Review.new], local: true do |form| %>
         <div class="field">
-          <%= form.label :content, "Scrivi la tua recensione" %>
+          <%= form.label :content, "Write your review" %>
           <%= form.text_area :content %>
         </div>
 
         <div class="actions">
-          <%= form.submit 'Aggiungi Recensione' %>
+          <%= form.submit 'Add Review' %>
         </div>
       <% end %>
     <% else %>
-      <p>Devi essere <%= link_to 'loggato', new_user_session_path %> per lasciare una recensione.</p>
+      <p>You should be <%= link_to 'logged', new_user_session_path %> to write a Review.</p>
     <% end %>
   </div>
 </div>

@@ -20,7 +20,7 @@ Feature: Flight Search and Sorting
     And I fill in "Destination city" with "Los Angeles"
     And I select the departure date "2024-09-20"
     And I press "Search Flights"
-    When I click on the "Total Price" header
+    When I click on the "Total Price" 
     Then the results should be sorted by "price" in ascending order
 
   Scenario: Sort flights by duration in ascending order
@@ -29,7 +29,7 @@ Feature: Flight Search and Sorting
     And I fill in "Destination city" with "Los Angeles"
     And I select the departure date "2024-09-20"
     And I press "Search Flights"
-    When I click on the "Duration" header
+    When I click on the "Duration" 
     Then the results should be sorted by "duration" in ascending order
 
   Scenario: Sort flights by arrival time in ascending order
@@ -38,5 +38,5 @@ Feature: Flight Search and Sorting
     And I fill in "Destination city" with "Los Angeles"
     And I select the departure date "2024-09-20"
     And I press "Search Flights"
-    When I click on the "Arrival Time" header
+    When I click on the "Arrival Time" 
     Then the results should be sorted by "arrival time" in ascending order

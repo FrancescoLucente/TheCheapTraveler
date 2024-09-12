@@ -38,9 +38,10 @@ Then("I should see only direct flights with price equal or below {int} in the re
   end
 end
 
-When('I click on the {string} header') do |header|
+When('I click on the {string}') do |header|
   click_link header
 end
+
 
 Then("the results should be sorted by {string} in ascending order") do |sort_criteria|
   column_index = case sort_criteria
@@ -60,5 +61,22 @@ Then("the results should be sorted by {string} in ascending order") do |sort_cri
     values = rows.map { |row| row.all('td')[column_index].text.to_f }
     expect(values).to eq(values.sort)
   end
+end
+
+Then("I should be on the home page") do
+  expect(page).to have_current_path(root_path)
+end
+Then("I should be logged in") do
+  expect(page).to have_content("Logout") # Assumi che l'opzione "Logout" appaia dopo il login
+end
+When("I search for a city called {string}") do |city_name|
+  fill_in "city_name", with: city_name
+  click_button "Search"
+end
+
+
+Then("I should have {string}") do |text|
+  
+  expect(page).to have_content(text)
 end
 
