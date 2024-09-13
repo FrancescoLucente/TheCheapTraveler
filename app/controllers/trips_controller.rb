@@ -1,0 +1,232 @@
+class TripsController < ApplicationController
+  before_action :set_trip, only: %i[ show edit update destroy ]
+
+  require 'net/http'
+  require 'json'
+  # GET /trips or /trips.json
+  
+  def index
+    @trips = Trip.all
+    # Filtra per voli diretti se il parametro `direct` è presente
+  if params[:direct] == 'yes'
+    @trips = @trips.where(is_direct_outbound: true)
+  end
+
+  # Filtra per voli che si possono cambiare se il parametro `flexible` è presente
+  if params[:flexible] == 'yes'
+    @trips = @trips.where(is_change_allowed: true) # Assumendo che tu abbia un campo `is_flexible`
+  end
+  if params[:budget].present?
+    budget = params[:budget].to_f
+    @trips = @trips.where("total_price <= ?", budget)
+  end
+    # Lista delle colonne ordinabili
+    sortable_columns = ['departure_time_outbound', 'arrival_time_outbound', 'duration_outbound', 'total_price', 'departure_time_inbound', 'arrival_time_inbound', 'duration_inbound']
+  
+    if params[:sort].present? && sortable_columns.include?(params[:sort])
+      @trips = @trips.order("#{params[:sort]} ASC")
+    end
+    
+  end
+  
+  
+  
+  # GET /trips/1 or /trips/1.json
+  def show
+  end
+
+  # GET /trips/new
+  def new
+    @trip = Trip.new
+  end
+
+  # GET /trips/1/edit
+  def edit
+  end
+
+  # POST /trips or /trips.json
+  def create
+    @trip = Trip.new(trip_params)
+
+    respond_to do |format|
+      if @trip.save
+        format.html { redirect_to trip_url(@trip), notice: "Trip was successfully created." }
+        format.json { render :show, status: :created, location: @trip }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @trip.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PATCH/PUT /trips/1 or /trips/1.json
+  def update
+    respond_to do |format|
+      if @trip.update(trip_params)
+        format.html { redirect_to trip_url(@trip), notice: "Trip was successfully updated." }
+        format.json { render :show, status: :ok, location: @trip }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @trip.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # DELETE /trips/1 or /trips/1.json
+  def destroy
+    @trip.destroy!
+
+    respond_to do |format|
+      format.html { redirect_to trips_url, notice: "Trip was successfully destroyed." }
+      format.json { head :no_content }
+    end
+  end
+
+  def search_trip
+    # Parametri del form
+    departure_city = params[:departure_city]
+    destination_city = params[:destination_city]
+    departure_date = params[:departure_date]
+    return_date = params[:return_date] if params[:round_trip] == 'yes'
+    number_of_people = params[:number_of_people]
+    number_of_children = params[:number_of_children]
+    number_of_infants = params[:number_of_infants]
+  
+    # Cancella tutti i viaggi esistenti nel database
+    Trip.delete_all
+  
+    # Cerca i nuovi viaggi tramite l'API
+    departure_sky_id = get_sky_id(departure_city)
+    destination_sky_id = get_sky_id(destination_city)
+  
+    return redirect_to trips_path, alert: "Città non trovata" if departure_sky_id.nil? || destination_sky_id.nil?
+  
+    flights = if params[:round_trip] == 'yes'
+                search_round_trip_flight(departure_sky_id, destination_sky_id, departure_date, return_date, number_of_people, number_of_children, number_of_infants)
+              else
+                search_one_way_flight(departure_sky_id, destination_sky_id, departure_date, number_of_people, number_of_children, number_of_infants)
+              end
+  
+    # Se non ci sono voli, reindirizza con un messaggio
+    return redirect_to trips_path, alert: "Nessun volo trovato." if flights['itineraries'].empty?
+    # Salva i viaggi nel database
+    flights['itineraries'].each do |flight|
+      outbound_leg = flight['legs'][0]
+      trip = Trip.new(
+        trip_type: params[:round_trip] == 'yes' ? 'round_trip' : 'one_way',
+        departure_airport_outbound: outbound_leg['origin']['name'],
+        arrival_airport_outbound: outbound_leg['destination']['name'],
+        departure_time_outbound: outbound_leg['departure'],
+        arrival_time_outbound: outbound_leg['arrival'],
+        duration_outbound: outbound_leg['durationInMinutes'],
+        stop_count_outbound: outbound_leg['stopCount'],
+        is_direct_outbound: outbound_leg['stopCount'] == 0,
+        total_price: flight['price']['raw'],
+        total_duration: outbound_leg['durationInMinutes'],
+        is_change_allowed: flight['farePolicy']['isChangeAllowed'],
+        is_cancellation_allowed: flight['farePolicy']['isCancellationAllowed']
+      )
+  
+      if params[:round_trip] == 'yes'
+        inbound_leg = flight['legs'][1]
+        trip.update(
+          departure_airport_inbound: inbound_leg['origin']['name'],
+          arrival_airport_inbound: inbound_leg['destination']['name'],
+          departure_time_inbound: inbound_leg['departure'],
+          arrival_time_inbound: inbound_leg['arrival'],
+          duration_inbound: inbound_leg['durationInMinutes'],
+          stop_count_inbound: inbound_leg['stopCount'],
+          is_direct_inbound: inbound_leg['stopCount'] == 0
+        )
+        trip.total_duration += inbound_leg['durationInMinutes']
+      end
+  
+      trip.save!
+    end
+  
+    # Reindirizza all'index dopo aver popolato il database
+    redirect_to trips_path, notice: "Ricerca completata!"
+  end
+  
+
+  
+    # Use callbacks to share common setup or constraints between actions.
+    def set_trip
+      @trip = Trip.find(params[:id])
+    end
+    
+
+    # Only allow a list of trusted parameters through.
+    def trip_params
+      params.require(:trip).permit(:trip_type, :departure_airport_outbound, :arrival_airport_outbound, :departure_time_outbound, :arrival_time_outbound, :duration_outbound, :stop_count_outbound, :is_direct_outbound, :departure_airport_inbound, :arrival_airport_inbound, :departure_time_inbound, :arrival_time_inbound, :duration_inbound, :stop_count_inbound, :is_direct_inbound, :total_price, :total_duration, :is_change_allowed, :is_cancellation_allowed)
+    end
+
+    
+      
+  
+    
+    
+     
+    
+      # Metodo per ottenere lo skyId di una città
+      def get_sky_id(city_name)
+        url = URI("https://sky-scanner3.p.rapidapi.com/flights/auto-complete?query=#{CGI.escape(city_name)}")
+        http = Net::HTTP.new(url.host, url.port)
+        http.use_ssl = true
+        request = Net::HTTP::Get.new(url)
+        request['x-rapidapi-host'] = 'sky-scanner3.p.rapidapi.com'
+        request['x-rapidapi-key'] = ENV['EVENTS_KEY']
+    
+        response = http.request(request)
+        
+        data = JSON.parse(response.body)
+    
+        # Ritorna il primo skyId disponibile
+        return data['data'].first['navigation']['relevantFlightParams']['skyId'] rescue nil
+      end
+    
+      # Metodo per cercare i voli con gli skyId ottenuti
+      def search_one_way_flight(departure_sky_id, destination_sky_id, departure_date, adults, children, infants)
+        base_url = "https://sky-scanner3.p.rapidapi.com/flights/search-one-way"
+        
+        # Costruzione dell'URL per il viaggio di sola andata
+        url = URI("#{base_url}?fromEntityId=#{departure_sky_id}&toEntityId=#{destination_sky_id}&departDate=#{departure_date}&adults=#{adults}&children=#{children}&infants=#{infants}")
+      
+        # Richiesta HTTP
+        http = Net::HTTP.new(url.host, url.port)
+        http.use_ssl = true
+        request = Net::HTTP::Get.new(url)
+        request['x-rapidapi-host'] = 'sky-scanner3.p.rapidapi.com'
+        request['x-rapidapi-key'] = ENV['EVENTS_KEY']
+      
+        response = http.request(request)
+        data = JSON.parse(response.body)
+         
+      
+        # Restituisci i risultati dei voli, adattati alla tua struttura
+        return data['data'] rescue []
+      end
+
+      def search_round_trip_flight(departure_sky_id, destination_sky_id, departure_date, return_date, adults, children, infants)
+        base_url = "https://sky-scanner3.p.rapidapi.com/flights/search-roundtrip"
+        
+        # Costruzione dell'URL per il viaggio andata e ritorno
+        url = URI("#{base_url}?fromEntityId=#{departure_sky_id}&toEntityId=#{destination_sky_id}&departDate=#{departure_date}&returnDate=#{return_date}&adults=#{adults}&children=#{children}&infants=#{infants}")
+      
+        # Richiesta HTTP
+        http = Net::HTTP.new(url.host, url.port)
+        http.use_ssl = true
+        request = Net::HTTP::Get.new(url)
+        request['x-rapidapi-host'] = 'sky-scanner3.p.rapidapi.com'
+        request['x-rapidapi-key'] = ENV['EVENTS_KEY']
+      
+        response = http.request(request)
+        data = JSON.parse(response.body)
+        
+
+        # Restituisci i risultati dei voli, adattati alla tua struttura
+        return data['data']rescue []
+      end
+      
+    
+end

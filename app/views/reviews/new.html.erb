@@ -1,0 +1,22 @@
+<h1>New review</h1>
+
+<%= form_with model: [@city, @review], local: true do |form| %>
+  <div class="field">
+    <%= form.label :title %>
+    <%= form.text_field :title %>
+  </div>
+
+  <div class="field">
+    <%= form.label :content %>
+    <%= form.text_area :content %>
+  </div>
+
+  <div class="field">
+    <%= form.label :rating %>
+    <%= form.number_field :rating %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit 'Crea Recensione' %>
+  </div>
+<% end %>

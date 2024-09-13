@@ -1,0 +1,280 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+/* app/assets/stylesheets/application.css */
+
+
+header {
+  width: 100%;
+  background: #007bff;
+  padding: 15px 0;
+  text-align: center;
+  position: absolute;
+  top: 0;
+}
+
+.homepage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 60px;
+  flex-direction: column;
+}
+
+h1 {
+  font-size: 50px;
+  color: white;
+}
+
+/* Stile per la griglia delle città */
+.city-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Griglia adattabile con colonne minime di 200px */
+  gap: 20px; /* Spaziatura tra le città */
+}
+
+/* Stile per ogni singola città */
+.city-item {
+  text-align: center;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+/* Stile per le immagini delle città */
+.city-image {
+  max-width: 100%; /* Immagini al massimo della larghezza disponibile */
+  height: 100px; /* Altezza proporzionale alla larghezza per evitare distorsioni */
+}
+.footer-photos .carousel-inner {
+  max-height: 700px; /* Altezza massima delle immagini */
+}
+
+.footer-photos .carousel-item {
+  text-align: center; /* Centra le immagini nel carousel */
+}
+
+.footer-photos .carousel-item img {
+  height:700px; /* Altezza fissa per le immagini */
+  width: auto; /* Mantiene il rapporto di aspetto */
+  max-width: 80%; /* Larghezza massima delle immagini */
+  margin: 0 auto; /* Centra le immagini orizzontalmente */
+}
+
+.devise-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.field {
+  margin-bottom: 1em;
+}
+
+.actions {
+  margin-top: 1em;
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 5px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.button:hover {
+  background-color: #0056b3;
+  color: white;
+  text-decoration: none;
+}
+
+.flight-search-box {
+  width: 500px;
+  padding: 20px;
+  margin: 0px 20px 0px 20px;
+  border: 2px solid black;
+  border-radius: 5px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.city-search-box {
+  width: 500px;
+  padding: 20px;
+  margin: 0px 20px 0px 20px;
+  border: 2px solid black;
+  border-radius: 5px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.city-search-box form {
+  width: 330px;
+}
+
+.search-button {
+  text-align: center;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.container-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 5px;
+}
+
+.container-form label {
+  margin: 0;
+}
+
+.suggestion-form {
+  position: relative;
+}
+
+.suggestions {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  left: 0;
+  border: 1px solid;
+  max-width: 200px;
+  position: absolute;
+  background: white;
+  z-index: 1000;
+}
+.suggestions li {
+  padding: 8px;
+  cursor: pointer;
+}
+.suggestions li:hover {
+  background-color: white;
+}
+.suggest-ideas {
+margin-top: 20px;
+font-size: 16px;
+}
+.suggest-ideas a {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.suggest-ideas a:hover {
+  color: #0056b3;
+}
+
+.back-arrow {
+  font-size: 40px;
+}
+
+.back-arrow a:hover {
+  text-decoration: none;
+}
+
+.flight-table {
+  margin-top: 20px;
+  margin-bottom: 40px;
+  margin-left: 20px;
+}
+
+.flight-table td, .flight-table th{
+  padding: 10px;
+  border: 1px solid black;
+}
+
+.horizontal-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; 
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column; 
+  min-width: 200px; 
+}
+
+.form-group-checkbox {
+  display: inline-flex;
+  align-items: center;
+}
+
+.form-group-checkbox label {
+  margin-bottom: 0;
+  padding: 5px;
+}
+
+.form-group input, .form-group select, .form-group label {
+  width: 100%;
+}
+
+.custom-margin {
+  margin-left: 20px;
+}
+
+.register-box, .login-box {
+  width: 500px;
+  padding: 20px;
+  margin: 0px 20px 0px 20px;
+  border: 2px solid black;
+  border-radius: 5px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Contenitore principale */
+.container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+  
+/* Colonna di sinistra: eventi */
+.left-column {
+  width: 60%;
+  margin-right: 20px;
+}
+
+/* Colonna di destra: meteo e recensioni */
+.right-column {
+   width: 35%;
+ }
+  
+/* Sezione eventi */
+.event-item {
+  margin-bottom: 20px;
+}
+  
+/* Footer: foto carousel */
+.footer-photos {
+  margin-top: 40px;
+  width: 100%;
+}

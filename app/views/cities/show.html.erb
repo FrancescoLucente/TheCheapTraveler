@@ -1,0 +1,100 @@
+<p style="color: green"><%= notice %></p>
+
+<div class="back-arrow custom-margin">
+  <a href="#" onclick="window.history.back(); return false;" title="Go back">
+    &#8592; <!-- Codice della freccia (←) -->
+  </a>
+</div>
+
+<!-- Titolo centrato -->
+<h1 class="text-center flex-grow-1"><%= @city.name + ", " + @city.country %></h1>
+
+<!-- Contenitore principale con Flexbox -->
+<div class="container">
+  <div class="left-column">
+    <!-- Eventi a sinistra -->
+    <h2><%= link_to "Events", city_events_path(@city) %></h2>
+    <% @city.events.order(event_date: :asc).limit(3).each do |event| %>
+      <div class="event-item">
+        <h3><%= link_to event.name, city_event_path(@city, event) %></h3>
+        <p>Date: <%= event.event_date.strftime("%B %d, %Y %H:%M") %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="right-column">
+    <!-- Meteo a destra -->
+    <h2>Meteo</h2>
+    <% if @weather[:error] %>
+      <p><%= @weather[:error] %></p>
+    <% else %>
+      <p>Temperatura: <%= @weather[:temperature] %>°C</p>
+      <p>Descrizione: <%= @weather[:description] %></p>
+    <% end %>
+
+    <!-- Recensioni a destra -->
+    <h2>Recensioni</h2>
+    <% if @reviews.any? %>
+      <ul>
+        <% @reviews.each do |review| %>
+          <li>
+            <strong><%= review.user.name %>:</strong> <%= review.content %>
+            <em>(<%= review.created_at.strftime("%Y-%m-%d") %>)</em>
+            <% if current_user.admin? || current_user.mod? %>
+              <%= form_with model: [@city, review], local: true, method: :delete do %>
+                <%= submit_tag 'Elimina', data: { confirm: 'Sei sicuro di voler eliminare questa recensione?' }, class: 'btn btn-danger' %>
+              <% end %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p>Non ci sono recensioni per questa città.</p>
+    <% end %>
+
+    <h2>Aggiungi una recensione</h2>
+
+    <% if user_signed_in? %>
+      <%= form_with model: [@city, Review.new], local: true do |form| %>
+        <div class="field">
+          <%= form.label :content, "Scrivi la tua recensione" %>
+          <%= form.text_area :content %>
+        </div>
+
+        <div class="actions">
+          <%= form.submit 'Aggiungi Recensione' %>
+        </div>
+      <% end %>
+    <% else %>
+      <p>Devi essere <%= link_to 'loggato', new_user_session_path %> per lasciare una recensione.</p>
+    <% end %>
+  </div>
+</div>
+
+<!-- Sezione foto sotto -->
+<% if @city.photos.any? %>
+  <footer>
+    <div id="carouselExampleIndicators" class="carousel slide footer-photos" data-ride="carousel">
+      <ol class="carousel-indicators">
+        <% @city.photos.each_with_index do |photo, index| %>
+          <li data-target="#carouselExampleIndicators" data-slide-to="<%= index %>" class="<%= 'active' if index == 0 %>"></li>
+        <% end %>
+      </ol>
+      <div class="carousel-inner">
+        <% @city.photos.each_with_index do |photo, index| %>
+          <div class="carousel-item <%= 'active' if index == 0 %>">
+            <%= image_tag photo.image_url, alt: @city.name, class: "d-block w-100" %>
+          </div>
+        <% end %>
+      </div>
+      <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+  </footer>
+<% end %>

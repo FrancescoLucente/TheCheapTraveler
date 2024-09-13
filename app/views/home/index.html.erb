@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>The Cheap Traveler</title>
+</head>
+</html>
+
+<!-- app/views/pages/home.html.erb -->
+
+<header>
+  <h1>TheCheapTraveler</h1>
+</header>
+
+<div class="homepage">
+  <div class="flight-search-box">
+    <h2>Search your trip</h2>
+    <%= form_with url: search_trip_trips_path, method: :post do %>
+      <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+
+      <div class="container-form">
+        <label for="departure_city">Departure city:</label>
+        <div class="suggestion-form">
+          <input type="text" id="departure_city" name="departure_city" required onkeyup="suggestCities(this.value, 'departure_suggestions', 'departure_city')">
+          <ul id="departure_suggestions" class="suggestions"></ul>
+        </div>
+      </div>
+
+      <div class="container-form">
+        <label for="destination_city">Destination city:</label>
+        <div class="suggestion-form">
+          <input type="text" id="destination_city" name="destination_city" required onkeyup="suggestCities(this.value, 'destination_suggestions', 'destination_city')">
+          <ul id="destination_suggestions" class="suggestions"></ul>
+        </div>
+      </div>
+
+      <div>
+        <label for="departure_date">Departure date:</label>
+        <input type="date" id="departure_date" name="departure_date" required>
+      </div>
+
+      <div>
+        <label for="number_of_people">Number of adults:</label>
+        <input type="number" id="number_of_people" name="number_of_people" value="1" min="1" required>
+      </div>
+      <div>
+        <label for="number_of_children">Number of children:</label>
+        <input type="number" id="number_of_children" name="number_of_children" value="0"min="0" required>
+      </div>
+
+      <div>
+        <label for="number_of_infants">Number of infants:</label>
+        <input type="number" id="number_of_infants" name="number_of_infants" value="0" min="0" required>
+      </div>
+      <div>
+        <input type="checkbox" id="round_trip" name="round_trip" value="yes" onclick="toggleReturnDate()">
+        <label for="round_trip">Roundtrip</label>
+      </div>
+
+      <div id="return_date_div" style="display:none;">
+        <label for="return_date">Return date:</label>
+        <input type="date" id="return_date" name="return_date">
+      </div>
+
+      <div class="search-button">
+        <input type="submit" value="Search Flights">
+      </div>
+    <%end%>
+  </div>
+
+  <div class="city-search-box">
+    <h2>Search city</h2>
+
+    <form action="<%= search_city_path %>" method="get">
+      <div class="container-form">
+        <label for="city_name">Search city by name:</label>
+        <div class="suggestion-form">
+          <input type="text" id="city_name" name="city_name" required onkeyup="suggestCities(this.value, 'city_suggestions', 'city_name')">
+          <ul id="city_suggestions" class="suggestions"></ul>
+        </div>
+      </div>
+      <div class="search-button">
+          <input type="submit" value="Search">
+      </div>
+    </form>
+    <div class="suggest-ideas">
+      <p>Do you need any ideas? <%= link_to 'Click here', cities_path %></p>
+    </div>
+  </div>
+
+  <% if user_signed_in? %>
+    <p>Benvenuto, <%= current_user.name %>!</p>
+    <%= link_to 'Logout', destroy_user_session_path, method: :delete %>
+      <% if current_user.admin? %>
+      <h3>Set Admin</h3>
+      <%= form_with url: make_admin_users_path, method: :patch do %>
+        <label for="admin_email">Email dell'utente da nominare Admin:</label>
+        <input type="email" name="email" id="admin_email" required>
+        <input type="submit" value="Set Admin">
+      <% end %>
+    <% end %>
+
+    <!-- Form visibile per admin e mod -->
+    <% if current_user.admin? || current_user.mod? %>
+      <h3>Set Mod</h3>
+      <%= form_with url: make_mod_users_path, method: :patch do %>
+        <label for="mod_email">Email dell'utente da nominare Mod:</label>
+        <input type="email" name="email" id="mod_email" required>
+        <input type="submit" value="Set Mod">
+      <% end %>
+    <% end %>
+
+    <!-- Form visibile solo per gli admin -->
+    <% if current_user.admin? %>
+      <h3>Remove Mod</h3>
+      <%= form_with url: remove_mod_users_path, method: :patch do %>
+        <label for="remove_mod_email">Email dell'utente da rimuovere da Mod:</label>
+        <input type="email" name="email" id="remove_mod_email" required>
+        <input type="submit" value="Remove Mod">
+      <% end %>
+    <% end %>
+  <% else %>
+    <%= link_to 'Sign In', new_user_session_path, class: 'button' %>
+    <%= link_to 'Sign Up', new_user_registration_path, class: 'button' %>
+  <% end %>
+</div>
+
+<script>
+  function toggleReturnDate() {
+    var roundTripCheckbox = document.getElementById('round_trip');
+    var returnDateDiv = document.getElementById('return_date_div');
+    if (roundTripCheckbox.checked) {
+      returnDateDiv.style.display = 'block';
+    } else {
+      returnDateDiv.style.display = 'none';
+    }
+  }
+
+  function suggestCities(query, suggestionListId, inputId) {
+    if (query.length === 0) {
+      document.getElementById(suggestionListId).innerHTML = "";
+      return;
+    }
+
+    fetch(`/suggest_cities?query=${query}`)
+      .then(response => response.json())
+      .then(data => {
+        const suggestionList = document.getElementById(suggestionListId);
+        suggestionList.innerHTML = "";
+
+        data.forEach(city => {
+          const suggestionItem = document.createElement('li');
+          suggestionItem.textContent = city.name;
+          suggestionItem.onclick = () => {
+            document.getElementById(inputId).value = city.name;
+            suggestionList.innerHTML = "";
+          };
+          suggestionList.appendChild(suggestionItem);
+        });
+      });
+  }
+</script>
+
+
+
+
+

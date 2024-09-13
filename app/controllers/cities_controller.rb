@@ -1,0 +1,85 @@
+
+require 'httparty'
+class CitiesController < ApplicationController
+  before_action :set_city, only: %i[ show edit update destroy ]
+
+  # GET /cities or /cities.json
+  def index
+    @query = params[:query]
+    if @query.present?
+      @cities = City.where("name LIKE ?", "%#{@query}%")
+    else
+      @cities = City.all
+    end
+  end
+  def show
+      @city = City.find(params[:id])
+      @city.fetch_images_from_unsplash
+      @city.fetch_events_from_rapidapi
+      @weather = @city.fetch_weather
+
+      if @weather[:error]
+        flash[:alert] = "Could not fetch weather data: #{@weather[:error]}"
+      end
+
+      @city = City.find(params[:id])
+      @reviews = @city.reviews
+  end 
+  # GET /cities/new
+  def new
+    @city = City.new
+  end
+
+  # GET /cities/1/edit
+  def edit
+  end
+
+  # POST /cities or /cities.json
+  def create
+    @city = City.new(city_params)
+
+    respond_to do |format|
+      if @city.save
+        format.html { redirect_to city_url(@city), notice: "City was successfully created." }
+        format.json { render :show, status: :created, location: @city }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @city.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PATCH/PUT /cities/1 or /cities/1.json
+  def update
+    respond_to do |format|
+      if @city.update(city_params)
+        format.html { redirect_to city_url(@city), notice: "City was successfully updated." }
+        format.json { render :show, status: :ok, location: @city }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @city.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # DELETE /cities/1 or /cities/1.json
+  def destroy
+    @city.destroy!
+
+    respond_to do |format|
+      format.html { redirect_to cities_url, notice: "City was successfully destroyed." }
+      format.json { head :no_content }
+    end
+  end
+
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_city
+      @city = City.find(params[:id])
+    end
+
+    # Only allow a list of trusted parameters through.
+    def city_params
+      params.require(:city).permit(:name, :country, :code)
+    end
+end
