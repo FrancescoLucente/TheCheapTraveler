@@ -175,7 +175,7 @@ class TripsController < ApplicationController
         http.use_ssl = true
         request = Net::HTTP::Get.new(url)
         request['x-rapidapi-host'] = 'sky-scanner3.p.rapidapi.com'
-        request['x-rapidapi-key'] = '169b173a81msh1dd268500e59405p14d323jsn9b82494d8ac8'
+        request['x-rapidapi-key'] = ENV['EVENTS_KEY']
     
         response = http.request(request)
         
@@ -197,7 +197,7 @@ class TripsController < ApplicationController
         http.use_ssl = true
         request = Net::HTTP::Get.new(url)
         request['x-rapidapi-host'] = 'sky-scanner3.p.rapidapi.com'
-        request['x-rapidapi-key'] = '169b173a81msh1dd268500e59405p14d323jsn9b82494d8ac8'
+        request['x-rapidapi-key'] = ENV['EVENTS_KEY']
       
         response = http.request(request)
         data = JSON.parse(response.body)
@@ -218,7 +218,7 @@ class TripsController < ApplicationController
         http.use_ssl = true
         request = Net::HTTP::Get.new(url)
         request['x-rapidapi-host'] = 'sky-scanner3.p.rapidapi.com'
-        request['x-rapidapi-key'] = '169b173a81msh1dd268500e59405p14d323jsn9b82494d8ac8'
+        request['x-rapidapi-key'] = ENV['EVENTS_KEY']
       
         response = http.request(request)
         data = JSON.parse(response.body)

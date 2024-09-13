@@ -92,14 +92,14 @@ class City < ApplicationRecord
     http.use_ssl = true
 
     request = Net::HTTP::Get.new(url)
-    request["X-RapidAPI-Key"] = 'da03b8da1amshe251ccba685cddap18f4e9jsnd1f33d6c395a'  # Sostituisci con la tua chiave API
+    request["X-RapidAPI-Key"] = ENV['METEO_KEY']
     request["X-RapidAPI-Host"] = 'ai-weather-by-meteosource.p.rapidapi.com'
 
     response = http.request(request)
     weather_data = JSON.parse(response.body)
 
     if response.is_a?(Net::HTTPSuccess)
-      puts weather_data  # inserita per vedere l'intero dato ricevuto
+      
       current_weather = weather_data['current']
       {
         temperature: current_weather['temperature'],
