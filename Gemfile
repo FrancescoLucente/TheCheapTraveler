@@ -68,6 +68,8 @@ group :test do
   gem 'selenium-webdriver'
   gem 'cucumber-rails', require: false
   gem 'database_cleaner-active_record', '~> 2.0'
+  gem 'rails-controller-testing'
+
 end
 gem 'dotenv-rails', groups: [:development, :test]
 gem 'httparty'
