@@ -1,6 +1,6 @@
 <p style="color: green"><%= notice %></p>
 
-<div class="back-arrow">
+<div class="back-arrow custom-margin">
   <a href="#" onclick="window.history.back(); return false;" title="Go back">
     &#8592; <!-- Codice della freccia (←) -->
   </a>
@@ -49,10 +49,10 @@
         <% end %>
       </ul>
     <% else %>
-      <p>Non ci sono recensioni per questa città.</p>
+      <p>There are no Reviews for this city</p>
     <% end %>
 
-    <h2>Aggiungi una recensione</h2>
+    <h2>Write a Review</h2>
 
     <% if user_signed_in? %>
       <%= form_with model: [@city, Review.new], local: true do |form| %>
@@ -66,7 +66,7 @@
         </div>
       <% end %>
     <% else %>
-      <p>You should be <%= link_to 'logged', new_user_session_path %> to write a Review.</p>
+      <p>Devi essere <%= link_to 'loggato', new_user_session_path %> per lasciare una recensione.</p>
     <% end %>
   </div>
 </div>
@@ -99,33 +99,6 @@
   </footer>
 <% end %>
 <style>
-  /* Contenitore principale */
-.container {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
 
-/* Colonna di sinistra: eventi */
-.left-column {
-  width: 60%;
-  margin-right: 20px;
-}
-
-/* Colonna di destra: meteo e recensioni */
-.right-column {
-  width: 35%;
-}
-
-/* Sezione eventi */
-.event-item {
-  margin-bottom: 20px;
-}
-
-/* Footer: foto carousel */
-.footer-photos {
-  margin-top: 40px;
-  width: 100%;
-}
 
 </style>

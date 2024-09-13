@@ -1,20 +1,23 @@
-<div class="d-flex justify-content-between align-items-center">
+<div class="d-flex justify-content-between align-items-center custom-margin">
   <!-- Link per tornare alla home -->
-  <div class="back-home">
-  <%= link_to 'Go back home', root_path, title: 'Go back home' %>
-</div>
+  <div class="back-arrow">
+      <a href="#" onclick="window.history.back(); return false;" title="Go back">
+        &#8592; <!-- Codice della freccia (←) -->
+      </a>
+    </div>
+
   <!-- Titolo centrato -->
   <h1 class="text-center flex-grow-1">Trip List</h1>
 </div>
 
-<%= form_with url: trips_path, method: :get, class: "horizontal-form" do %>
-  <div class="form-group">
+<%= form_with url: trips_path, method: :get, class: "horizontal-form custom-margin" do %>
+  <div class="form-group-checkbox">
     <!-- Checkbox for direct flights -->
     <input type="checkbox" id="direct_flights" name="direct" value="yes" <%= 'checked' if params[:direct] == 'yes' %>>
     <label for="direct_flights">Show only direct flights</label>
   </div>
 
-  <div class="form-group">
+  <div class="form-group-checkbox">
     <!-- Checkbox for flexible flights -->
     <input type="checkbox" id="flexible_flights" name="flexible" value="yes" <%= 'checked' if params[:flexible] == 'yes' %>>
     <label for="flexible_flights">Show only flexible flights</label>
@@ -26,12 +29,12 @@
     <input type="number" id="budget" name="budget" value="<%= params[:budget] %>" placeholder="Enter your budget">
   </div>
 
-  <div class="form-group">
+  <div class="search-button">
     <input type="submit" value="Apply Filters">
   </div>
 <% end %>
 <% if @trips.any? %>
-  <table>
+  <table class="flight-table">
     <thead>
         <tr>
         <th>Trip Type</th>
@@ -81,19 +84,23 @@
 <% end %>
 
 <!-- Search Form -->
-<%= form_with url: search_trip_trips_path, method: :post, class: "horizontal-form" do %>
+<%= form_with url: search_trip_trips_path, method: :post, class: "horizontal-form custom-margin" do %>
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
   <div class="form-group">
     <label for="departure_city">Departure city:</label>
-    <input type="text" id="departure_city" name="departure_city" required onkeyup="suggestCities(this.value, 'departure_suggestions', 'departure_city')">
-    <ul id="departure_suggestions" class="suggestions"></ul>
+    <div class="suggestion-form">
+      <input type="text" id="departure_city" name="departure_city" required onkeyup="suggestCities(this.value, 'departure_suggestions', 'departure_city')">
+      <ul id="departure_suggestions" class="suggestions"></ul>
+    </div>
   </div>
 
   <div class="form-group">
     <label for="destination_city">Destination city:</label>
-    <input type="text" id="destination_city" name="destination_city" required onkeyup="suggestCities(this.value, 'destination_suggestions', 'destination_city')">
-    <ul id="destination_suggestions" class="suggestions"></ul>
+    <div class="suggestion-form">
+      <input type="text" id="destination_city" name="destination_city" required onkeyup="suggestCities(this.value, 'destination_suggestions', 'destination_city')">
+      <ul id="destination_suggestions" class="suggestions"></ul>
+    </div>
   </div>
 
   <div class="form-group">
@@ -103,22 +110,22 @@
 
   <div class="form-group">
     <label for="number_of_people">Number of adults:</label>
-    <input type="number" id="number_of_people" name="number_of_people" min="1" required>
+    <input type="number" id="number_of_people" name="number_of_people" value="1" min="1" required>
   </div>
 
   <div class="form-group">
     <label for="number_of_children">Number of children:</label>
-    <input type="number" id="number_of_children" name="number_of_children" min="0" required>
+    <input type="number" id="number_of_children" name="number_of_children" value="0" min="0" required>
   </div>
 
   <div class="form-group">
     <label for="number_of_infants">Number of infants:</label>
-    <input type="number" id="number_of_infants" name="number_of_infants" min="0" required>
+    <input type="number" id="number_of_infants" name="number_of_infants" value="0" min="0" required>
   </div>
 
-  <div class="form-group">
-    <input type="checkbox" id="round_trip" name="round_trip" value="yes" onclick="toggleReturnDate()">
+  <div class="form-group-checkbox">
     <label for="round_trip">Roundtrip</label>
+    <input type="checkbox" id="round_trip" name="round_trip" value="yes" onclick="toggleReturnDate()">
   </div>
 
   <div class="form-group" id="return_date_div" style="display:none;">
@@ -126,7 +133,7 @@
     <input type="date" id="return_date" name="return_date">
   </div>
 
-  <div class="form-group">
+  <div class="search-button">
     <input type="submit" value="Search">
   </div>
 <% end %>
@@ -167,41 +174,4 @@
   }
 </script>
 
-<style>
-  .horizontal-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px; /* Space between fields */
-}
 
-.form-group {
-  display: flex;
-  flex-direction: column; /* Keep labels above inputs */
-  min-width: 200px; /* Ensure fields have a minimum size */
-}
-
-/* Adjust the width of the fields */
-.form-group input, .form-group select, .form-group label {
-  width: 100%;
-}
-
-.suggestions {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  border: 1px solid;
-  max-width: 200px;
-  position: absolute;
-  background: white;
-}
-
-.suggestions li {
-  padding: 8px;
-  cursor: pointer;
-}
-
-.suggestions li:hover {
-  background-color: #f0f0f0;
-}
-
-</style>
