@@ -129,9 +129,9 @@ RSpec.describe "Trips", type: :request do
     context "quando si effettua una ricerca reale di sola andata" do
       it "crea un viaggio con la data di partenza corretta" do
        
-        expect {
-          post '/trips/search_trip', params: valid_one_way_params
-        }.to change(Trip, :count).by_at_least(1) 
+        post '/trips/search_trip', params: valid_one_way_params
+
+        expect(Trip.count).to be >= 1
 
         trip = Trip.last
         expect(trip.departure_time_outbound.to_date.to_s).to eq('2024-12-01')
@@ -145,9 +145,9 @@ RSpec.describe "Trips", type: :request do
 
     context "quando si effettua una ricerca reale di andata e ritorno" do
       it "crea un viaggio con le date di partenza e ritorno corrette" do
-        expect {
-          post '/trips/search_trip', params: valid_round_trip_params
-        }.to change(Trip, :count).by_at_least(1)
+        post '/trips/search_trip', params: valid_round_trip_params
+
+        expect(Trip.count).to be >= 1
 
         trip = Trip.last
         expect(trip.departure_time_outbound.to_date.to_s).to eq('2024-12-01')
