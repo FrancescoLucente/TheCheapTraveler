@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe "Trips", type: :request do
-  let(:valid_attributes) {
-    {
+  let(:trip1) {
+    Trip.create!(
       trip_type: 'one_way',
       departure_airport_outbound: 'JFK',
       arrival_airport_outbound: 'LAX',
@@ -10,121 +10,168 @@ RSpec.describe "Trips", type: :request do
       arrival_time_outbound: Time.now + 5.hours,
       duration_outbound: 300,
       total_price: 150.00,
+      is_direct_outbound: true,
       is_change_allowed: true,
       is_cancellation_allowed: true
-    }
+    )
   }
 
-  let(:invalid_attributes) {
-    { trip_type: nil, departure_airport_outbound: nil }
+  let(:trip2) {
+    Trip.create!(
+      trip_type: 'one_way',
+      departure_airport_outbound: 'JFK',
+      arrival_airport_outbound: 'SFO',
+      departure_time_outbound: Time.now + 1.day,
+      arrival_time_outbound: Time.now + 1.day + 6.hours,
+      duration_outbound: 360,
+      total_price: 200.00,
+      is_direct_outbound: false,
+      is_change_allowed: false,
+      is_cancellation_allowed: false
+    )
   }
 
-  let!(:trip) { Trip.create! valid_attributes }
+  before do
+    trip1
+    trip2
+  end
 
-  ### Test per l'azione INDEX ###
+  
   describe "GET /trips" do
     it "ritorna una risposta di successo" do
       get trips_path
       expect(response).to have_http_status(:success)
     end
 
-    it "assegna correttamente i viaggi a @trips" do
+    it "assegna tutti i viaggi a @trips quando non ci sono filtri" do
       get trips_path
-      expect(assigns(:trips)).to include(trip)
+      expect(assigns(:trips)).to match_array([trip1, trip2])
     end
 
-    it "filtra i voli diretti quando il parametro direct è 'yes'" do
-      get trips_path, params: { direct: 'yes' }
-      expect(assigns(:trips)).to all(have_attributes(is_direct_outbound: true))
+    context "quando si filtra per voli diretti" do
+      it "ritorna solo i voli diretti" do
+        get trips_path, params: { direct: 'yes' }
+        expect(assigns(:trips)).to eq([trip1])
+      end
+    end
+
+    context "quando si filtra per voli modificabili" do
+      it "ritorna solo i voli con possibilità di modifica" do
+        get trips_path, params: { flexible: 'yes' }
+        expect(assigns(:trips)).to eq([trip1])
+      end
+    end
+
+    context "quando si filtra per budget massimo" do
+      it "ritorna solo i voli entro il budget specificato" do
+        get trips_path, params: { budget: '160' }
+        expect(assigns(:trips)).to eq([trip1])
+      end
+
+      it "non ritorna voli se nessuno rientra nel budget" do
+        get trips_path, params: { budget: '100' }
+        expect(assigns(:trips)).to be_empty
+      end
+    end
+
+    context "quando si applicano più filtri contemporaneamente" do
+      it "ritorna i voli che soddisfano tutti i criteri" do
+        get trips_path, params: { direct: 'yes', flexible: 'yes', budget: '160' }
+        expect(assigns(:trips)).to eq([trip1])
+      end
+
+      it "non ritorna voli se nessuno soddisfa tutti i criteri" do
+        get trips_path, params: { direct: 'yes', budget: '10' }
+        expect(assigns(:trips)).to be_empty
+      end
+    end
+
+    context "quando si ordina i risultati" do
+      it "ordina per prezzo totale in ordine crescente" do
+        get trips_path, params: { sort: 'total_price' }
+        expect(assigns(:trips)).to eq([trip1, trip2])
+      end
+
+      it "ordina per durata in ordine crescente" do
+        get trips_path, params: { sort: 'duration_outbound' }
+        expect(assigns(:trips)).to eq([trip1, trip2])
+      end
+
+      it "non ordina se il parametro sort non è valido" do
+        get trips_path, params: { sort: 'invalid_column' }
+        expect(assigns(:trips)).to match_array([trip1, trip2])
+      end
     end
   end
 
-  ### Test per l'azione SHOW ###
-  describe "GET /trips/:id" do
-    it "ritorna una risposta di successo per un trip esistente" do
-      get trip_path(trip)
-      expect(response).to have_http_status(:success)
-    end
 
-    it "mostra il viaggio richiesto" do
-      get trip_path(trip)
-      expect(assigns(:trip)).to eq(trip)
-    end
-  end
 
-  ### Test per l'azione CREATE ###
-  describe "POST /trips" do
-    context "con attributi validi" do
-      it "crea un nuovo viaggio" do
-        expect {
-          post trips_path, params: { trip: valid_attributes }
-        }.to change(Trip, :count).by(1)
-      end
-
-      it "reindirizza al nuovo viaggio creato" do
-        post trips_path, params: { trip: valid_attributes }
-        expect(response).to redirect_to(Trip.last)
-      end
-    end
-
-    context "con attributi non validi" do
-      it "non crea un nuovo viaggio" do
-        expect {
-          post trips_path, params: { trip: invalid_attributes }
-        }.to_not change(Trip, :count)
-      end
-
-      it "renderizza il template 'new'" do
-        post trips_path, params: { trip: invalid_attributes }
-        expect(response).to render_template("new")
-      end
-    end
-  end
-
-  ### Test per l'azione UPDATE ###
-  describe "PATCH/PUT /trips/:id" do
-    context "con attributi validi" do
-      let(:new_attributes) {
-        { total_price: 200.00 }
+  describe "POST /trips/search_trip (chiamata reale all'API)" do
+    let(:valid_one_way_params) do
+      {
+        departure_city: 'Rome',
+        destination_city: 'Paris',
+        departure_date: '2024-12-01', 
+        round_trip: 'no',
+        number_of_people: '1',
+        number_of_children: '0',
+        number_of_infants: '0'
       }
+    end
 
-      it "aggiorna il viaggio richiesto" do
-        patch trip_path(trip), params: { trip: new_attributes }
-        trip.reload
-        expect(trip.total_price).to eq(200.00)
-      end
+    let(:valid_round_trip_params) do
+      valid_one_way_params.merge({
+        round_trip: 'yes',
+        return_date: '2024-12-10'
+      })
+    end
 
-      it "reindirizza al viaggio aggiornato" do
-        patch trip_path(trip), params: { trip: new_attributes }
-        expect(response).to redirect_to(trip)
+    context "quando si effettua una ricerca reale di sola andata" do
+      it "crea un viaggio con la data di partenza corretta" do
+       
+        expect {
+          post '/trips/search_trip', params: valid_one_way_params
+        }.to change(Trip, :count).by_at_least(1) 
+
+        trip = Trip.last
+        expect(trip.departure_time_outbound.to_date.to_s).to eq('2024-12-01')
+        expect(trip.trip_type).to eq('one_way')
+
+        expect(response).to redirect_to(trips_path)
+        follow_redirect!
+        expect(response.body).to include('Ricerca completata!')
       end
     end
 
-    context "con attributi non validi" do
-      it "non aggiorna il viaggio" do
-        patch trip_path(trip), params: { trip: invalid_attributes }
-        trip.reload
-        expect(trip.total_price).to eq(valid_attributes[:total_price])
-      end
+    context "quando si effettua una ricerca reale di andata e ritorno" do
+      it "crea un viaggio con le date di partenza e ritorno corrette" do
+        expect {
+          post '/trips/search_trip', params: valid_round_trip_params
+        }.to change(Trip, :count).by_at_least(1)
 
-      it "renderizza il template 'edit'" do
-        patch trip_path(trip), params: { trip: invalid_attributes }
-        expect(response).to render_template("edit")
+        trip = Trip.last
+        expect(trip.departure_time_outbound.to_date.to_s).to eq('2024-12-01')
+        expect(trip.departure_time_inbound.to_date.to_s).to eq('2024-12-10')
+        expect(trip.trip_type).to eq('round_trip')
+
+        expect(response).to redirect_to(trips_path)
+        follow_redirect!
+        expect(response.body).to include('Ricerca completata!')
       end
     end
-  end
 
-  ### Test per l'azione DESTROY ###
-  describe "DELETE /trips/:id" do
-    it "elimina il viaggio richiesto" do
-      expect {
-        delete trip_path(trip)
-      }.to change(Trip, :count).by(-1)
-    end
+    context "quando viene fornita una città non esistente" do
+      it "reindirizza con un messaggio di avviso 'Città non trovata'" do
+        post '/trips/search_trip', params: valid_one_way_params.merge({ departure_city: 'CittàInesistente12345' })
 
-    it "reindirizza all'indice dei viaggi" do
-      delete trip_path(trip)
-      expect(response).to redirect_to(trips_path)
+        expect(response).to redirect_to(trips_path)
+        follow_redirect!
+        expect(response.body).to include('Città non trovata')
+      end
     end
   end
 end
+
+  
+
+

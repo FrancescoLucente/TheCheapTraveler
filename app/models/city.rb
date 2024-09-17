@@ -81,7 +81,7 @@ class City < ApplicationRecord
           event.save  # Salva l'evento nel database
         end
       else
-        puts "Errore durante la richiesta all'API: #{response.code} - #{response.message}"
+        puts "Errore durante la richiesta all'API Eventi: #{response.code} - #{response.message}"
       end
     end
 
