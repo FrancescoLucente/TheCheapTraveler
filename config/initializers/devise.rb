@@ -20,7 +20,7 @@ Devise.setup do |config|
   config.omniauth :facebook, ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_APP_SECRET'],{
     scope: 'email',
     info_fields: 'email,name',
-    callback_url: "https://043e-95-251-203-242.ngrok-free.app/users/auth/facebook/callback"
+    callback_url: " https://1394-31-27-214-63.ngrok-free.app/users/auth/facebook/callback"
 
   } 
 

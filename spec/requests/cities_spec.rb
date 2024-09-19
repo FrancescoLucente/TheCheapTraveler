@@ -2,8 +2,9 @@ require 'rails_helper'
 
 RSpec.describe "Cities", type: :request do
   # Creazione di città di esempio
-  let!(:new_york) { City.create(name: "New York", country: "USA", code: "NYC") }
-  let!(:los_angeles) { City.create(name: "Los Angeles", country: "USA", code: "LAX") }
+  let!(:new_york) { City.create(name: "New York", country: "USA", code: "NYC", latitude: 40.7128, longitude: -74.0060) }
+  let!(:los_angeles) { City.create(name: "Los Angeles", country: "USA", code: "LAX", latitude: 34.0522, longitude: -118.2437) }
+
 
   ### Test per l'azione INDEX ###
   describe "GET /cities" do
